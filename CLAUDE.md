@@ -99,3 +99,23 @@ Follow the Convex guidelines from `.cursor/rules/convex_rules.mdc`:
 - The frontend code is in `src/` (not `app/` as mentioned in README)
 - Authentication is handled by Convex Auth with anonymous sign-in enabled
 - Run `npm run lint` before making any commits to ensure TypeScript and build validation
+
+## Project Goals & Strategy
+
+**Primary Objective**: Build a compelling portfolio piece that demonstrates technical excellence and can be sold as a complete solution.
+
+**Development Philosophy**:
+- **Speed over perfection**: Rapid development and implementation take priority over extensive requirements gathering
+- **Portfolio-first**: Every feature should showcase technical skills and demonstrate real-world applicability
+- **Sellable product**: Code should be production-ready and transferable to potential buyers/clients
+- **No extended planning phases**: Avoid months of requirements gathering - build, iterate, and refine quickly
+
+**Success Metrics**:
+- Technical demonstration value for portfolio
+- Code quality that attracts potential buyers
+- Feature completeness that shows real-world application
+- Architecture that can scale and be transferred to other teams
+
+## Local Documentation
+
+This file serves as local documentation that Claude Code reads automatically on startup, reducing the need for web searches. Add project-specific information here to improve Claude's context awareness without internet lookups.

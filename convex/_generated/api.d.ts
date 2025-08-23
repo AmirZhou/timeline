@@ -8,14 +8,18 @@
  * @module
  */
 
+import type * as auth from "../auth.js";
+import type * as demo from "../demo.js";
+import type * as http from "../http.js";
+import type * as lib_notionClient from "../lib/notionClient.js";
+import type * as notion_sync from "../notion/sync.js";
+import type * as router from "../router.js";
+
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
 } from "convex/server";
-import type * as auth from "../auth.js";
-import type * as http from "../http.js";
-import type * as router from "../router.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -27,14 +31,21 @@ import type * as router from "../router.js";
  */
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  demo: typeof demo;
   http: typeof http;
+  "lib/notionClient": typeof lib_notionClient;
+  "notion/sync": typeof notion_sync;
   router: typeof router;
 }>;
+declare const fullApiWithMounts: typeof fullApi;
+
 export declare const api: FilterApi<
-  typeof fullApi,
+  typeof fullApiWithMounts,
   FunctionReference<any, "public">
 >;
 export declare const internal: FilterApi<
-  typeof fullApi,
+  typeof fullApiWithMounts,
   FunctionReference<any, "internal">
 >;
+
+export declare const components: {};
