@@ -41,7 +41,12 @@ The application follows a hierarchical component structure centered around the `
 - `UnlockFlow` is the main orchestrator that provides context through three nested providers:
   - `ThemeProvider`: Global theming context
   - `StageDataProvider`: Stage and substep data management
-  - `FlowStateProvider`: UI state management (current stage, expanded views, completion status)
+  - `FlowStateProvider`: UI state management (current stage, completion status)
+
+**UI Behavior:**
+- All substeps are always visible beneath each stage node (no dropdown/toggle behavior)
+- Stage selection changes the active stage highlighting
+- `StageDropdownContainer` component exists but is unused (legacy component)
 
 **Component Organization (`src/components/`):**
 - **providers/**: Context providers for state management
@@ -78,9 +83,19 @@ Follow the Convex guidelines from `.cursor/rules/convex_rules.mdc`:
 - Prefer indexes over filters in queries
 - Use file-based routing for function references
 
+## Recent Changes
+
+**Dropdown UI to Always-Visible Substeps (Latest):**
+- Converted from dropdown/toggle behavior to always-visible substeps
+- Removed `expandedStage` state from `FlowStateProvider`
+- Simplified `StageClickHandler` to handle stage selection only
+- Modified `UnlockFlow` to render `VerticalSubstepList` directly without conditional visibility
+- All substeps now display permanently beneath each stage node
+
 ## Important Notes
 
 - The project is connected to Convex deployment: `sincere-bullfrog-704`
 - HTTP routes in `convex/router.ts` are kept separate from authentication routes
 - The frontend code is in `src/` (not `app/` as mentioned in README)
 - Authentication is handled by Convex Auth with anonymous sign-in enabled
+- Run `npm run lint` before making any commits to ensure TypeScript and build validation
