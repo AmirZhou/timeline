@@ -15,7 +15,7 @@ export const HeaderTitle: React.FC = () => {
         letterSpacing: '0.1em',
       }}
     >
-      UNLOCK INSTRUCTIONS
+      PROJECT TIMELINE
     </h1>
   );
 };

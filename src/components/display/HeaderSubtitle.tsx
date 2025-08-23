@@ -14,7 +14,7 @@ export const HeaderSubtitle: React.FC = () => {
         letterSpacing: '0.05em',
       }}
     >
-      ALWAYS AVAILABLE
+      ACCESS ALBERTA LEGAL SERVICES
     </p>
   );
 };
