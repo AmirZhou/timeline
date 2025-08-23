@@ -3,8 +3,8 @@ import { ThemeProvider } from './providers/ThemeProvider';
 import { StageDataProvider, useStageData } from './providers/StageDataProvider';
 import { FlowStateProvider, useFlowState } from './providers/FlowStateProvider';
 import { FlowContainer } from './layout/FlowContainer';
-import { HorizontalFlowLayout } from './layout/HorizontalFlowLayout';
-import { VerticalSubstepList } from './layout/VerticalSubstepList';
+import { StageRow } from './layout/StageRow';
+import { SubstepGrid } from './layout/SubstepGrid';
 import { HeaderTitle } from './display/HeaderTitle';
 import { HeaderSubtitle } from './display/HeaderSubtitle';
 import { VersionIndicator } from './display/VersionIndicator';
@@ -18,7 +18,6 @@ import { ProgressBar } from './visual/ProgressBar';
 import { SubstepStatus } from './status/SubstepStatus';
 import { FailSafeIndicator } from './status/FailSafeIndicator';
 import { StageClickHandler } from './interactive/StageClickHandler';
-import { SubstepClickHandler } from './interactive/SubstepClickHandler';
 import { ActionButton } from './interactive/ActionButton';
 import { GlowEffect } from './animation/GlowEffect';
 import { PulseAnimation } from './animation/PulseAnimation';
@@ -40,10 +39,10 @@ const FlowContent: React.FC = () => {
         <HeaderSubtitle />
       </div>
       
-      <HorizontalFlowLayout>
+      <StageRow>
         {stages.map((stage, index) => (
-          <div key={stage.id} style={{ display: 'flex', alignItems: 'center' }}>
-            <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <React.Fragment key={stage.id}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <StageClickHandler stageId={stage.id}>
                 <GlowEffect 
                   color="#00ff00" 
@@ -63,28 +62,6 @@ const FlowContent: React.FC = () => {
                   isComplete={state.completedStages.has(stage.id)}
                 />
               </StageClickHandler>
-              
-              <VerticalSubstepList>
-                {stage.substeps.map((substep) => (
-                  <SubstepClickHandler key={substep.id} substepId={substep.id}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <SubstepNumber
-                        value={substep.number}
-                        isActive={state.currentSubstep === substep.id}
-                        isComplete={state.completedSubsteps.has(substep.id)}
-                      />
-                      <SubstepText
-                        content={substep.text}
-                        isActive={state.currentSubstep === substep.id}
-                        isComplete={state.completedSubsteps.has(substep.id)}
-                      />
-                      <SubstepStatus
-                        complete={state.completedSubsteps.has(substep.id)}
-                      />
-                    </div>
-                  </SubstepClickHandler>
-                ))}
-              </VerticalSubstepList>
             </div>
             
             {index < stages.length - 1 && (
@@ -92,9 +69,11 @@ const FlowContent: React.FC = () => {
                 isActive={state.completedStages.has(stage.id)} 
               />
             )}
-          </div>
+          </React.Fragment>
         ))}
-      </HorizontalFlowLayout>
+      </StageRow>
+      
+      <SubstepGrid />
       
       <div style={{ textAlign: 'center', margin: '2rem 0' }}>
         <ProgressBar percentage={calculateProgress()} />
