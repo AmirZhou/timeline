@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from './providers/ThemeProvider';
 import { FlowStateProvider } from './providers/FlowStateProvider';
 import { FlowContainer } from './layout/FlowContainer';
-import { HorizontalFlowLayout } from './layout/HorizontalFlowLayout';
+import { VerticalTimelineLayout } from './layout/VerticalTimelineLayout';
 import { HeaderTitle } from './display/HeaderTitle';
 import { HeaderSubtitle } from './display/HeaderSubtitle';
 import { SyncStatusBar } from './status/SyncStatusBar';
@@ -17,7 +17,7 @@ const FlowContent: React.FC = () => {
       
       <SyncStatusBar />
       
-      <HorizontalFlowLayout />
+      <VerticalTimelineLayout />
     </FlowContainer>
   );
 };

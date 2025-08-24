@@ -11,15 +11,15 @@ export const FlowContainer: React.FC<FlowContainerProps> = ({ children }) => {
   return (
     <div 
       style={{ 
-        backgroundColor: theme.background,
+        backgroundColor: '#000000',
         color: theme.text,
         padding: '2rem',
         borderRadius: '8px',
-        minHeight: '600px',
+        minHeight: '100vh',
         width: '100%',
         maxWidth: '1200px',
         margin: '0 auto',
-        border: `1px solid ${theme.border}`,
+        fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", monospace',
       }}
     >
       {children}
