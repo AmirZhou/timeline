@@ -11,11 +11,13 @@ export interface NotionRecord {
 
 export class NotionSyncClient {
   private notion: Client;
+  private apiKey: string;
 
   constructor(apiKey: string) {
     this.notion = new Client({
       auth: apiKey,
     });
+    this.apiKey = apiKey;
   }
 
   // Read-only: Fetch changes from Notion for caching in Convex
@@ -46,26 +48,52 @@ export class NotionSyncClient {
       
       console.log(`🌐 NETWORK REQUEST START: ${requestTimestamp}`);
       
-      const response = await this.notion.databases.query({
-        database_id: databaseId,
-        filter: lastSync ? {
-          timestamp: "last_edited_time",
-          last_edited_time: {
-            after: new Date(lastSync).toISOString(),
-          },
-        } : undefined,
-        sorts: [
-          {
+      // Use direct fetch to capture cache headers instead of Notion SDK
+      const fetchResponse = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Notion-Version': '2022-06-28',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          filter: lastSync ? {
             timestamp: "last_edited_time",
-            direction: "descending",
-          },
-        ],
+            last_edited_time: {
+              after: new Date(lastSync).toISOString(),
+            },
+          } : undefined,
+          sorts: [
+            {
+              timestamp: "last_edited_time",
+              direction: "descending",
+            },
+          ],
+        })
       });
 
       // Calculate and log network timing
       const requestEndTime = Date.now();
       const responseTimestamp = new Date().toISOString();
       const networkLatency = requestEndTime - requestStartTime;
+      
+      // 🗂️ CACHE HEADERS ANALYSIS
+      console.log(`\n🗂️ CACHE HEADERS ANALYSIS:`);
+      console.log(`   Cache-Control: ${fetchResponse.headers.get('cache-control') || 'none'}`);
+      console.log(`   ETag: ${fetchResponse.headers.get('etag') || 'none'}`);
+      console.log(`   Last-Modified: ${fetchResponse.headers.get('last-modified') || 'none'}`);
+      console.log(`   Age: ${fetchResponse.headers.get('age') || 'none'}`);
+      console.log(`   X-Cache: ${fetchResponse.headers.get('x-cache') || 'none'}`);
+      console.log(`   X-Cache-Status: ${fetchResponse.headers.get('x-cache-status') || 'none'}`);
+      console.log(`   Expires: ${fetchResponse.headers.get('expires') || 'none'}`);
+      console.log(`   Pragma: ${fetchResponse.headers.get('pragma') || 'none'}`);
+      console.log(`   Vary: ${fetchResponse.headers.get('vary') || 'none'}`);
+      
+      if (!fetchResponse.ok) {
+        throw new Error(`Notion API error: ${fetchResponse.status} ${fetchResponse.statusText}`);
+      }
+      
+      const response = await fetchResponse.json();
       
       console.log(`🌐 NETWORK TIMING ANALYSIS:`);
       console.log(`   📡 Request start: ${requestTimestamp}`);
