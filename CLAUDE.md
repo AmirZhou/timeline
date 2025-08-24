@@ -29,7 +29,7 @@ Application bootstrap with ConvexProvider wrapping the main App component. Confi
 
 #### **ProjectTimeline.tsx** - `ProjectTimeline()`, `TimelineContent()`
 Main orchestrator component providing ThemeProvider → TimelineStateProvider → TimelineContent hierarchy.
-TimelineContent renders HeaderTitle, HeaderSubtitle, SyncStatusBar, and HorizontalTimelineLayout.
+TimelineContent renders HeaderTitle, HeaderSubtitle, SyncStatusBar, and VerticalTimelineLayout.
 
 
 ### Provider Components
@@ -52,19 +52,6 @@ Each phase contains id, name, icon type, completion status, and array of tasks.
 #### **TimelineContainer.tsx** - `TimelineContainer(props: { children: React.ReactNode })`
 Main container wrapper applying theme colors, padding, border radius, and responsive centering.
 Sets max width constraints and provides primary visual boundary for the timeline interface.
-
-#### **HorizontalTimelineLayout.tsx** - `HorizontalTimelineLayout()`
-Core timeline layout rendering project phases in horizontal 4-column grid.
-Manages task cards, modal interactions, phase ordering, loading states, and connection arrows.
-Integrates TaskCard and TaskModal for comprehensive task display and interaction.
-
-#### **PhaseRow.tsx** - `PhaseRow(props: { children: React.ReactNode })`
-Horizontal flexbox container with center alignment, gap spacing, and responsive wrapping.
-Provides consistent spacing and alignment for phase-related elements.
-
-#### **TaskGrid.tsx** - `TaskGrid()`
-Grid layout displaying tasks across multiple phases using usePhaseData and useTimelineState.
-Creates responsive grid based on phase count with interactive task elements.
 
 #### **VerticalTaskList.tsx** - `VerticalTaskList(props: { children: React.ReactNode })`
 Simple vertical flexbox container for linear task arrangement with consistent spacing.
@@ -234,10 +221,10 @@ Public query returning sync status information for frontend display including er
 ## Summary
 
 **Component Inventory:**
-- **React Components**: 27 total (no authentication components)
+- **React Components**: 24 total (no authentication components)
   - Main App Components: 3 (App, main.tsx, ProjectTimeline)
   - Provider Components: 3 (Theme, TimelineState, PhaseData)
-  - Layout Components: 5 (TimelineContainer, HorizontalTimelineLayout, PhaseRow, TaskGrid, VerticalTaskList)
+  - Layout Components: 2 (TimelineContainer, VerticalTaskList)
   - Display Components: 7 (HeaderTitle, HeaderSubtitle, PhaseLabel, TaskText, TaskCard, TaskModal, InteractiveIndicator, VersionIndicator)
   - Interactive Components: 3 (ActionButton, PhaseClickHandler, TaskClickHandler)
   - Animation Components: 2 (GlowEffect, PulseAnimation)
