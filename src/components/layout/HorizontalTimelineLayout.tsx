@@ -46,22 +46,22 @@ export const HorizontalTimelineLayout: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <span className="ml-3 text-gray-600">Loading project timeline...</span>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        <span className="ml-3 text-gray-400">Loading project timeline...</span>
       </div>
     );
   }
 
   return (
     <>
-      <div className="relative max-w-7xl mx-auto p-6">
+      <div className="relative max-w-7xl mx-auto p-6 bg-transparent">
         {/* Phase Connection Arrows */}
         <div className="hidden lg:flex absolute top-16 left-0 right-0 justify-between items-center px-6 z-0">
           {phaseOrder.slice(0, -1).map((_, index) => (
             <div key={index} className="flex-1 flex justify-end items-center px-8">
               <div className="flex items-center">
-                <div className="h-0.5 bg-gray-300 flex-1 min-w-[50px]"></div>
-                <svg className="w-4 h-4 text-gray-400 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                <div className="h-0.5 bg-white opacity-30 flex-1 min-w-[50px]"></div>
+                <svg className="w-4 h-4 text-white opacity-60 ml-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </div>
@@ -77,17 +77,17 @@ export const HorizontalTimelineLayout: React.FC = () => {
             const phaseNum = phaseNumbers[phaseName] || (phaseIndex + 1).toString();
             
             return (
-              <div key={phaseName} className={`flex flex-col bg-gray-50 rounded-lg border-t-4 ${colorClass} relative`}>
+              <div key={phaseName} className={`flex flex-col bg-gray-900 bg-opacity-50 rounded-lg border-t-4 ${colorClass} relative backdrop-blur-sm hover:bg-opacity-70 transition-all duration-200`}>
                 {/* Phase Number Badge */}
-                <div className="absolute -top-3 left-4 bg-white border-2 border-gray-300 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold text-gray-700 z-20">
+                <div className="absolute -top-3 left-4 bg-gray-800 border-2 border-gray-600 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold text-white z-20">
                   {phaseNum}
                 </div>
                 
                 <div className="p-4 pb-2 pt-6">
-                  <h2 className="font-bold text-lg text-gray-900 mb-2 leading-tight">
+                  <h2 className="font-bold text-lg text-white mb-2 leading-tight">
                     {phaseName.split(': ')[1] || phaseName}
                   </h2>
-                  <div className="text-sm text-gray-600 mb-4">
+                  <div className="text-sm text-gray-400 mb-4">
                     {tasks.length} task{tasks.length !== 1 ? 's' : ''}
                   </div>
                 </div>
@@ -107,8 +107,8 @@ export const HorizontalTimelineLayout: React.FC = () => {
                         );
                       })
                     ) : (
-                      <div className="text-center py-8 text-gray-500">
-                        <div className="text-gray-400 mb-2">📋</div>
+                      <div className="text-center py-8 text-gray-400">
+                        <div className="text-gray-500 mb-2">📋</div>
                         <p className="text-sm">No tasks found</p>
                       </div>
                     )}
