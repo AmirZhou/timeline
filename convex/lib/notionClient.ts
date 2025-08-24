@@ -40,6 +40,7 @@ export class NotionSyncClient {
         ],
       });
 
+      console.log(`Fetched ${response.results.length} records from Notion`);
       return response.results.map((page: any) => this.transformNotionPage(page));
     } catch (error) {
       console.error("Error fetching from Notion:", error);
@@ -89,6 +90,11 @@ export class NotionSyncClient {
   }
 
   private extractPropertyValue(property: any): any {
+    if (!property || !property.type) {
+      console.warn("Invalid property structure:", property);
+      return null;
+    }
+
     switch (property.type) {
       case 'title':
         return property.title?.[0]?.plain_text || '';
@@ -104,8 +110,76 @@ export class NotionSyncClient {
         return property.date?.start || null;
       case 'checkbox':
         return property.checkbox;
+      case 'url':
+        return property.url;
+      case 'email':
+        return property.email;
+      case 'phone_number':
+        return property.phone_number;
+      case 'people':
+      case 'person':
+        return property.people?.map((person: any) => ({
+          id: person.id,
+          name: person.name || person.plain_text || 'Unknown',
+          email: person.person?.email || null
+        })) || [];
+      case 'relation':
+        return property.relation?.map((rel: any) => rel.id) || [];
+      case 'rollup':
+        return this.extractRollupValue(property.rollup);
+      case 'formula':
+        return this.extractFormulaValue(property.formula);
+      case 'status':
+        return property.status?.name || null;
+      case 'created_time':
+      case 'last_edited_time':
+        return property[property.type];
+      case 'created_by':
+      case 'last_edited_by':
+        return {
+          id: property[property.type]?.id,
+          name: property[property.type]?.name || 'Unknown'
+        };
+      case 'files':
+        return property.files?.map((file: any) => ({
+          name: file.name,
+          url: file.file?.url || file.external?.url
+        })) || [];
       default:
-        return null;
+        console.warn(`Unhandled property type: ${property.type}`, property);
+        return property[property.type] || null;
+    }
+  }
+
+  private extractRollupValue(rollup: any): any {
+    if (!rollup) return null;
+    
+    switch (rollup.type) {
+      case 'number':
+        return rollup.number;
+      case 'date':
+        return rollup.date?.start || null;
+      case 'array':
+        return rollup.array?.map((item: any) => this.extractPropertyValue({ type: item.type, [item.type]: item[item.type] })) || [];
+      default:
+        return rollup[rollup.type] || null;
+    }
+  }
+
+  private extractFormulaValue(formula: any): any {
+    if (!formula) return null;
+    
+    switch (formula.type) {
+      case 'string':
+        return formula.string;
+      case 'number':
+        return formula.number;
+      case 'boolean':
+        return formula.boolean;
+      case 'date':
+        return formula.date?.start || null;
+      default:
+        return formula[formula.type] || null;
     }
   }
 

@@ -1,8 +1,25 @@
 {
-  "name": "flex-template",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@teamflow/timeline",
+  "private": false,
+  "version": "1.0.0",
   "type": "module",
+  "description": "Timeline components for TeamFlow",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AmirZhou/timeline.git"
+  },
+  "homepage": "https://github.com/AmirZhou/timeline#readme",
+  "bugs": {
+    "url": "https://github.com/AmirZhou/timeline/issues"
+  },
+  "keywords": ["timeline", "components", "react", "teamflow"],
+  "author": "AmirZhou",
+  "license": "MIT",
   "scripts": {
     "dev": "npm-run-all --parallel dev:frontend dev:backend",
     "dev:frontend": "vite --open",

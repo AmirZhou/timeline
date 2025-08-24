@@ -1,15 +1,17 @@
 import { v } from "convex/values";
-import { action, internalMutation, internalQuery, query } from "../_generated/server";
+import { action, internalAction, internalMutation, internalQuery, query } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { NotionSyncClient } from "../lib/notionClient";
 
 // Action: Fetch data from Notion (runs on server, can make HTTP requests)
-export const syncNotionDatabase = action({
+// Make this internal so it can be scheduled
+export const syncNotionDatabase = internalAction({
   args: { 
     databaseId: v.string(),
-    forceFullSync: v.optional(v.boolean())
+    forceFullSync: v.optional(v.boolean()),
+    retryAttempt: v.optional(v.number())
   },
-  handler: async (ctx, { databaseId, forceFullSync = false }) => {
+  handler: async (ctx, { databaseId, forceFullSync = false, retryAttempt = 0 }) => {
     try {
       // Get Notion API key from environment
       const notionApiKey = process.env.NOTION_API_KEY;
@@ -17,15 +19,35 @@ export const syncNotionDatabase = action({
         throw new Error("NOTION_API_KEY not configured");
       }
 
+      // Update sync status to running
+      await ctx.runMutation(internal.notion.sync.updateSyncMeta, {
+        databaseId,
+        status: "running",
+        recordCount: 0,
+        lastSyncTime: Date.now()
+      });
+
       // Get last sync metadata
       const lastSync = await ctx.runQuery(internal.notion.sync.getLastSyncMeta, { databaseId });
+      
+      // Force full sync if:
+      // 1. Explicitly requested
+      // 2. Last sync was more than 1 hour ago (catch missed changes)
+      // 3. Last sync had errors
+      const oneHourAgo = Date.now() - (60 * 60 * 1000);
+      const shouldForceFullSync = forceFullSync || 
+        !lastSync || 
+        lastSync.lastSyncTime < oneHourAgo ||
+        lastSync.syncStatus === "error";
       
       // Initialize Notion client and fetch changes
       const client = new NotionSyncClient(notionApiKey);
       const changes = await client.fetchDatabaseChanges(
         databaseId, 
-        forceFullSync ? undefined : lastSync?.lastSyncTime
+        shouldForceFullSync ? undefined : lastSync?.lastSyncTime
       );
+      
+      console.log(`Sync mode: ${shouldForceFullSync ? 'FULL' : 'INCREMENTAL'}, Found ${changes.length} changes`);
       
       console.log(`Found ${changes.length} changes from Notion`);
 
@@ -50,13 +72,35 @@ export const syncNotionDatabase = action({
       return { success: true, synced: changes.length };
       
     } catch (error) {
-      console.error("Notion sync failed:", error);
+      console.error(`Notion sync failed (attempt ${retryAttempt + 1}):`, error);
+      
+      // Implement exponential backoff retry logic
+      const maxRetries = 3;
+      const shouldRetry = retryAttempt < maxRetries && 
+        error instanceof Error &&
+        (error.message.includes('rate limit') || 
+         error.message.includes('timeout') ||
+         error.message.includes('network'));
+      
+      if (shouldRetry) {
+        const retryDelay = Math.min(1000 * Math.pow(2, retryAttempt), 10000); // Cap at 10 seconds
+        console.log(`Retrying sync in ${retryDelay}ms...`);
+        
+        // Schedule retry
+        await ctx.scheduler.runAfter(retryDelay, internal.notion.sync.syncNotionDatabase, {
+          databaseId,
+          forceFullSync,
+          retryAttempt: retryAttempt + 1
+        });
+        
+        return { success: false, retrying: true, nextAttempt: retryAttempt + 1 };
+      }
       
       // Update sync metadata with error
       await ctx.runMutation(internal.notion.sync.updateSyncMeta, {
         databaseId,
         status: "error",
-        errorMessage: error instanceof Error ? error.message : String(error),
+        errorMessage: `${error instanceof Error ? error.message : String(error)} (after ${retryAttempt + 1} attempts)`,
         recordCount: 0,
         lastSyncTime: Date.now()
       });
@@ -111,13 +155,23 @@ export const batchUpsertRecords = internalMutation({
       };
 
       if (existing) {
-        // Update existing record if it's newer
-        if (record.lastModified > existing.lastModified) {
-          await ctx.db.patch(existing._id, recordData);
+        // Always update if we're doing a force sync, or if the record is newer
+        const shouldUpdate = forceFullSync || record.lastModified > existing.lastModified;
+        
+        if (shouldUpdate) {
+          await ctx.db.patch(existing._id, {
+            ...recordData,
+            // Preserve the original creation time from our database
+            createdTime: existing.createdTime,
+          });
+          console.log(`Updated record: ${record.title} (${existing.lastModified} -> ${record.lastModified})`);
+        } else {
+          console.log(`Skipped record (no changes): ${record.title}`);
         }
       } else {
         // Insert new record
         await ctx.db.insert("notion_records", recordData);
+        console.log(`Inserted new record: ${record.title}`);
       }
     }
   },
@@ -211,11 +265,11 @@ export const getRecords = query({
 
     // Sort results
     results.sort((a, b) => {
-      let aValue, bValue;
+      let aValue: any, bValue: any;
       
       if (sortBy === "lastModified" || sortBy === "createdTime") {
-        aValue = a[sortBy];
-        bValue = b[sortBy];
+        aValue = a[sortBy as keyof typeof a];
+        bValue = b[sortBy as keyof typeof b];
       } else {
         aValue = (a.properties as any)[sortBy];
         bValue = (b.properties as any)[sortBy];
@@ -256,5 +310,52 @@ export const getSyncStatus = query({
       recordCount: meta.recordCount,
       errorMessage: meta.errorMessage,
     };
+  },
+});
+
+// Public action: Force a full sync (useful for testing/debugging)
+export const forceFullSync = action({
+  args: { databaseId: v.string() },
+  handler: async (ctx, { databaseId }): Promise<{ success: boolean; synced?: number; retrying?: boolean; nextAttempt?: number }> => {
+    console.log(`Force full sync requested for database: ${databaseId}`);
+    return await ctx.runAction(internal.notion.sync.syncNotionDatabase, {
+      databaseId,
+      forceFullSync: true
+    });
+  },
+});
+
+// Scheduled action: Auto-sync every 10 minutes
+export const scheduledSync = internalAction({
+  handler: async (ctx) => {
+    const databaseId = process.env.NOTION_DATABASE_ID;
+    if (!databaseId) {
+      console.warn("NOTION_DATABASE_ID not configured, skipping scheduled sync");
+      return;
+    }
+    
+    console.log("Running scheduled sync...");
+    
+    try {
+      await ctx.runAction(internal.notion.sync.syncNotionDatabase, {
+        databaseId,
+        forceFullSync: false
+      });
+    } catch (error) {
+      console.error("Scheduled sync failed:", error);
+      // Don't throw - let the next scheduled sync try again
+    }
+    
+    // Schedule next sync (10 minutes)
+    await ctx.scheduler.runAfter(10 * 60 * 1000, internal.notion.sync.scheduledSync, {});
+  },
+});
+
+// Mutation to initialize scheduled syncing (call this once to start)
+export const initializeScheduledSync = internalMutation({
+  handler: async (ctx) => {
+    // Schedule the first sync to start immediately
+    await ctx.scheduler.runAfter(0, internal.notion.sync.scheduledSync, {});
+    console.log("Scheduled sync initialized");
   },
 });
