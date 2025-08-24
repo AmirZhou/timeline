@@ -8,11 +8,11 @@
  * @module
  */
 
-import type * as demo from "../demo.js";
 import type * as http from "../http.js";
 import type * as lib_notionClient from "../lib/notionClient.js";
 import type * as notion_sync from "../notion/sync.js";
 import type * as router from "../router.js";
+import type * as timeline from "../timeline.js";
 
 import type {
   ApiFromModules,
@@ -29,11 +29,11 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  demo: typeof demo;
   http: typeof http;
   "lib/notionClient": typeof lib_notionClient;
   "notion/sync": typeof notion_sync;
   router: typeof router;
+  timeline: typeof timeline;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

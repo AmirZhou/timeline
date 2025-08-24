@@ -40,9 +40,9 @@ export const TimelineStateProvider: React.FC<TimelineStateProviderProps> = ({ ch
   });
 
   // Real data from Notion via Convex
-  const allTasks = useQuery(api.demo.getProjectTimeline, {});
-  const syncStatus = useQuery(api.demo.getSyncStatus, {});
-  const triggerSyncAction = useAction(api.demo.triggerNotionSync);
+  const allTasks = useQuery(api.timeline.getProjectTimeline, {});
+  const syncStatus = useQuery(api.timeline.getSyncStatus, {});
+  const triggerSyncAction = useAction(api.timeline.triggerNotionSync);
 
   // Group tasks by phases for 4-column layout
   const phaseGroups = useMemo(() => {
