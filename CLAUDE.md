@@ -263,3 +263,19 @@ Public query returning sync status information for frontend display including er
   - HTTP Routing: 1 (basic setup, currently empty)
 
 This overview provides agents with comprehensive understanding of component relationships, data flows, and function signatures for effective codebase navigation and modification.
+
+---
+
+## Development Commands
+
+**Type Checking & Linting:**
+```bash
+npm run lint
+```
+This command runs the complete validation pipeline:
+1. `tsc -p convex -noEmit` - Type-check Convex backend functions
+2. `tsc -p . -noEmit` - Type-check React frontend application  
+3. `convex dev --once` - Validate Convex schema and generate types
+4. `vite build` - Test production build
+
+**Note:** Use `npm run lint` instead of running individual TypeScript checks (`npx tsc -p convex -noEmit` or `npx tsc -p . -noEmit`) as it provides comprehensive validation in a single command.
