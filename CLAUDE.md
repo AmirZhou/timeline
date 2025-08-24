@@ -6,14 +6,20 @@ This file provides a comprehensive overview of the codebase structure, React com
 
 **Technology Stack:**
 - **Frontend**: React 19 + TypeScript + Vite + Tailwind CSS
-- **Backend**: Convex (serverless functions + real-time database)
-- **Data Source**: Notion API integration for project timeline data
+- **Backend**: Convex (serverless functions only - no database)
+- **Data Source**: Direct Notion API integration for project timeline data
 
 **Core Flow:**
 1. React app renders ProjectTimeline component with nested providers
-2. Data flows from Notion → Convex (via sync actions) → React (via queries)
+2. Data flows DIRECTLY: Notion API → Convex Action → React State (no database caching)
 3. UI displays project phases in vertical timeline with task nodes
-4. Real-time sync status and manual refresh capabilities
+4. Real-time data fetching - every refresh gets fresh data from Notion
+
+**⚡ Key Architecture Change (August 2024):**
+- **ELIMINATED database caching layer** - No more stale data issues
+- **Direct API calls** - Fresh data from Notion on every refresh
+- **No schema validation** - Simplified data handling
+- **Faster iteration** - No database migrations or schema updates needed
 
 ---
 
@@ -297,59 +303,34 @@ Enables clean conditional CSS class application throughout components.
 
 ## Convex Backend Functions
 
-### Database Schema (`schema.ts`)
+**🚨 IMPORTANT: No Database Schema Required**
+- **No `schema.ts`** - Direct API approach bypasses database entirely
+- **No database tables** - No caching, no sync metadata, no stored records
+- **No validation schemas** - Raw Notion data is transformed in-flight
 
-#### **Tables:**
-- **notion_sync_meta**: Tracks sync status, timestamps, record counts, and error messages per database
-- **notion_records**: Stores transformed Notion data with properties, metadata, and indexing
+### Direct Notion API (`directNotionApi.ts`)
 
-### Timeline API Functions (`timeline.ts`)
+#### **getProjectTimelineDirect** - `action({ phase?: string, status?: string, priority?: string, limit?: number }): Promise<any[]>`
+**Core function** - Fetches fresh data directly from Notion API and returns transformed results.
+- Makes HTTP POST to `https://api.notion.com/v1/databases/{databaseId}/query`
+- Transforms raw Notion properties to match UI expectations
+- Applies filters (phase, status, priority) client-side
+- Sorts by week and applies limit
+- Returns data structure compatible with existing UI components
 
-#### **triggerNotionSync** - `action({ forceFullSync?: boolean }): Promise<{ success: boolean; synced: number }>`
-Manual sync trigger action that fetches data from Notion API and updates local records.
-Handles error states, updates sync metadata, and returns sync results.
-
-#### **getProjectTimeline** - `query({ phase?: string, status?: string, priority?: string, limit?: number }): Promise<any[]>`
-Frontend query for retrieving filtered project timeline data from cached Notion records.
-Supports filtering by phase, status, priority with optional result limiting.
-
-#### **getSyncStatus** - `query({}): Promise<any>`
-Returns current synchronization status including last sync time, record count, and error states.
-
-
-### Notion Sync Functions (`notion/sync.ts`)
-
-#### **syncNotionDatabase** - `action({ databaseId: string, forceFullSync?: boolean }): Promise<{ success: boolean; synced: number }>`
-Core sync action fetching changes from Notion, transforming data, and batch upserting to Convex.
-Manages sync metadata updates and comprehensive error handling with status tracking.
-
-#### **batchUpsertRecords** - `internalMutation({ databaseId: string, records: NotionRecord[] }): Promise<void>`
-Internal mutation for batch inserting/updating Notion records with duplicate detection.
-Compares lastModified timestamps to avoid unnecessary updates.
-
-#### **updateSyncMeta** - `internalMutation({ databaseId: string, status: 'success' | 'error' | 'running', errorMessage?: string, recordCount: number, lastSyncTime: number }): Promise<void>`
-Internal mutation updating sync metadata table with current sync status and statistics.
-
-#### **getLastSyncMeta** - `internalQuery({ databaseId: string }): Promise<SyncMeta | null>`
-Internal query retrieving last sync metadata for incremental sync operations.
-
-#### **getRecords** - `query({ databaseId: string, filters?: FilterOptions, sortBy?: string, sortDirection?: 'asc' | 'desc', limit?: number }): Promise<NotionRecord[]>`
-Public query for frontend data retrieval with comprehensive filtering, sorting, and pagination.
-Supports filtering by status, phase, priority, week with multiple sort options.
-
-#### **getSyncStatus** - `query({ databaseId: string }): Promise<SyncStatusResponse>`
-Public query returning sync status information for frontend display including error messages.
-
-### Notion Client (`lib/notionClient.ts`)
-
-#### **NotionSyncClient** - Class for Notion API integration
-- **constructor(apiKey: string)**: Initializes Notion client with API key
-- **fetchDatabaseChanges(databaseId: string, lastSync?: number): Promise<NotionRecord[]>**: Fetches database changes since last sync with filtering
-- **transformNotionPage(notionPage: any): NotionRecord**: Transforms raw Notion data to standardized format
-- **extractTitle(properties: any): string**: Extracts page title from Notion properties
-- **transformProperties(properties: any): Record<string, any>**: Converts Notion properties to camelCase with type handling
-- **extractPropertyValue(property: any): any**: Handles different Notion property types (title, rich_text, number, select, etc.)
-- **camelCase(str: string): string**: Utility for converting strings to camelCase format
+**Property Extraction Functions:**
+- `extractTitle(properties)` - Gets task name from Notion title property
+- `extractPhase(properties)` - Gets phase from 'Phase' property (fallback logic included)
+- `extractStatus(properties)` - Gets status from multiple possible keys
+- `extractPriority(properties)` - Gets priority level
+- `extractAssignee(properties)` - Gets assigned person
+- `extractWeek(properties)` - Gets target week number
+- `extractCategory(properties)` - Gets category multi-select array
+- `extractDescription(properties)` - Gets rich text description
+- `extractSuccessCriteria(properties)` - Gets success criteria
+- `extractDependencies(properties)` - Gets dependencies
+- `extractRisks(properties)` - Gets risk information
+- `extractDueDate(properties)` - Gets due date
 
 ### HTTP Routing (`http.ts`, `router.ts`)
 
@@ -360,23 +341,32 @@ Public query returning sync status information for frontend display including er
 
 ## Integration Overview
 
-**Data Flow:**
-1. Notion Database → NotionSyncClient.fetchDatabaseChanges()
-2. Raw data → transformNotionPage() → NotionRecord format
-3. NotionRecord[] → batchUpsertRecords() → Convex database
-4. Frontend queries getProjectTimeline() → React components
-5. UI updates trigger manual sync via triggerNotionSync()
+**🔄 Direct API Data Flow (No Database):**
+1. User clicks refresh → TimelineStateProvider.triggerSync()
+2. React calls → api.directNotionApi.getProjectTimelineDirect()
+3. Convex action makes → Direct HTTP POST to Notion API
+4. Raw Notion response → Transform properties in-flight
+5. Transformed data → React state (setAllTasks)
+6. React state → UI renders immediately
+
+**🎯 Key Benefits:**
+- **Zero stale data** - Every refresh gets live Notion data
+- **No schema maintenance** - No database migrations or validation updates
+- **Faster development** - Change data structure without backend changes
+- **Real-time accuracy** - See Notion changes instantly
 
 **State Management:**
-- TimelineStateProvider centralizes navigation, completion tracking, and Notion data
-- ThemeProvider provides consistent dark theme across components
-- PhaseDataProvider supplies static workflow phase definitions
+- **TimelineStateProvider** - Uses React `useState` instead of Convex queries
+- **Direct API calls** - `useAction(api.directNotionApi.getProjectTimelineDirect)` 
+- **Local state** - All data stored in React state, not database
+- **ThemeProvider** - Provides consistent dark theme across components
+- **PhaseDataProvider** - Supplies static workflow phase definitions
 
 
 ## Summary
 
-**Component Inventory:**
-- **React Components**: 26 total (no authentication components)
+**📊 Component Inventory:**
+- **React Components**: 25 total (no authentication components)
   - Main App Components: 3 (App, main.tsx, ProjectTimeline)
   - Provider Components: 3 (ThemeProvider, TimelineStateProvider, PhaseDataProvider)
   - Layout Components: 4 (TimelineContainer, VerticalTimelineLayout, PhaseRow, VerticalTaskList)
@@ -387,13 +377,24 @@ Public query returning sync status information for frontend display including er
   - Visual Components: 5 (PhaseIcon, PhaseNode, ConnectionArrow, ProgressBar, TaskNumber)
   - Utility: 1 (utils.ts)
 
-- **Convex Functions**: 11 total (no authentication functions)
-  - Timeline API Functions: 3 (triggerNotionSync, getProjectTimeline, getSyncStatus)
-  - Notion Sync Functions: 6 (syncNotionDatabase, batchUpsertRecords, updateSyncMeta, getLastSyncMeta, getRecords, getSyncStatus)
-  - Notion Client Class: 1 with 7 methods
-  - HTTP Routing: 1 (basic setup, currently empty)
+**⚡ Convex Functions**: **1 CORE FUNCTION** (simplified architecture)
+  - **Direct API**: 1 function (`getProjectTimelineDirect`) - Fetches live data from Notion
+  - **HTTP Routing**: 2 standard files (http.ts, router.ts) - Currently empty
 
-This overview provides agents with comprehensive understanding of component relationships, data flows, and function signatures for effective codebase navigation and modification.
+**🏗️ Removed Components** (August 2024 simplification):
+- ❌ Database schema (`schema.ts`) - No longer needed
+- ❌ Sync functions (`timeline.ts`, `notion/sync.ts`) - Replaced by direct API
+- ❌ NotionClient class (`lib/notionClient.ts`) - Simplified to inline functions
+- ❌ Test components (`testing/` folder) - No longer needed
+- ❌ Raw API test UI - Removed from main app
+
+**🎯 Architecture Benefits:**
+- **90% reduction** in Convex code complexity (1 function vs 11 functions)
+- **Zero database maintenance** - No schema, migrations, or sync state
+- **Real-time data** - Every refresh gets fresh Notion data
+- **Faster development** - Change data structure without backend updates
+
+This overview provides agents with comprehensive understanding of the streamlined direct API architecture.
 
 ---
 
@@ -404,9 +405,19 @@ This overview provides agents with comprehensive understanding of component rela
 npm run lint
 ```
 This command runs the complete validation pipeline:
-1. `tsc -p convex -noEmit` - Type-check Convex backend functions
+1. `tsc -p convex -noEmit` - Type-check Convex backend functions (only 1 function now!)
 2. `tsc -p . -noEmit` - Type-check React frontend application  
-3. `convex dev --once` - Validate Convex schema and generate types
+3. `convex dev --once` - Generate types (no schema validation needed)
 4. `vite build` - Test production build
 
-**Note:** Use `npm run lint` instead of running individual TypeScript checks (`npx tsc -p convex -noEmit` or `npx tsc -p . -noEmit`) as it provides comprehensive validation in a single command.
+**Development Server:**
+```bash
+npm run dev
+```
+Starts both frontend (Vite) and backend (Convex) in parallel.
+
+**🔑 Environment Setup:**
+- Ensure `NOTION_API_KEY` is set in `.env.local`
+- No database setup required - direct API calls only
+
+**Note:** Use `npm run lint` instead of running individual TypeScript checks as it provides comprehensive validation in a single command.

@@ -8,15 +8,9 @@
  * @module
  */
 
+import type * as directNotionApi from "../directNotionApi.js";
 import type * as http from "../http.js";
-import type * as lib_notionClient from "../lib/notionClient.js";
-import type * as notion_sync from "../notion/sync.js";
 import type * as router from "../router.js";
-import type * as testing_cacheInvalidation from "../testing/cacheInvalidation.js";
-import type * as testing_networkLatency from "../testing/networkLatency.js";
-import type * as testing_notionTimeGate from "../testing/notionTimeGate.js";
-import type * as testing_rawNotionApi from "../testing/rawNotionApi.js";
-import type * as timeline from "../timeline.js";
 
 import type {
   ApiFromModules,
@@ -33,15 +27,9 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  directNotionApi: typeof directNotionApi;
   http: typeof http;
-  "lib/notionClient": typeof lib_notionClient;
-  "notion/sync": typeof notion_sync;
   router: typeof router;
-  "testing/cacheInvalidation": typeof testing_cacheInvalidation;
-  "testing/networkLatency": typeof testing_networkLatency;
-  "testing/notionTimeGate": typeof testing_notionTimeGate;
-  "testing/rawNotionApi": typeof testing_rawNotionApi;
-  timeline: typeof timeline;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 
