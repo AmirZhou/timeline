@@ -1,121 +1,254 @@
-# CLAUDE.md
+# Project Timeline - Codebase Overview
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## Development Commands
-
-### Running the Application
-```bash
-# Start both frontend and backend in parallel
-npm run dev
-
-# Start frontend only (with Vite)
-npm run dev:frontend
-
-# Start backend only (Convex)
-npm run dev:backend
-
-# Build for production
-npm run build
-
-# Lint and type check
-npm run lint
-```
-
-### Testing
-The `lint` command performs TypeScript type checking for both frontend and Convex code, and validates the build process.
+This file provides a comprehensive overview of the codebase structure, React components, and Convex backend functions. Designed to give agents quick insight into the architecture, function signatures, and component purposes.
 
 ## Project Architecture
 
-### Technology Stack
-- **Frontend**: React 19 with TypeScript, Vite, Tailwind CSS
-- **Backend**: Convex for real-time data sync and serverless functions
-- **Authentication**: Convex Auth with anonymous authentication
-- **UI Library**: Custom components with Tailwind styling
+**Technology Stack:**
+- **Frontend**: React 19 + TypeScript + Vite + Tailwind CSS
+- **Backend**: Convex (serverless functions + real-time database)
+- **Data Source**: Notion API integration for project timeline data
 
-### Component Architecture
+**Core Flow:**
+1. React app renders UnlockFlow component with nested providers
+2. Data flows from Notion → Convex (via sync actions) → React (via queries)
+3. UI displays project phases in horizontal timeline with task cards
+4. Real-time sync status and manual refresh capabilities
 
-The application follows a hierarchical component structure centered around the `UnlockFlow` component:
+---
 
-**Core Component Hierarchy:**
-- `UnlockFlow` is the main orchestrator that provides context through three nested providers:
-  - `ThemeProvider`: Global theming context
-  - `StageDataProvider`: Stage and substep data management
-  - `FlowStateProvider`: UI state management (current stage, completion status)
+## React Components
 
-**UI Behavior:**
-- All substeps are always visible beneath each stage node (no dropdown/toggle behavior)
-- Stage selection changes the active stage highlighting
-- `StageDropdownContainer` component exists but is unused (legacy component)
+### Main Application Components
 
-**Component Organization (`src/components/`):**
-- **providers/**: Context providers for state management
-- **layout/**: Container and layout components (FlowContainer, HorizontalFlowLayout, VerticalSubstepList)
-- **display/**: Text and label components (HeaderTitle, StageLabel, SubstepText)
-- **visual/**: Visual elements (StageNode, ConnectionArrow, ProgressBar)
-- **interactive/**: User interaction handlers (StageClickHandler, ActionButton)
-- **animation/**: Animation wrappers (GlowEffect, PulseAnimation)
-- **status/**: Status indicators (SubstepStatus, FailSafeIndicator)
+#### **App.tsx** - `App()`
+Main application entry point that renders UnlockFlow within a full-screen black background container.
 
-### Backend Structure (Convex)
+#### **main.tsx** - Bootstrap
+Application bootstrap with ConvexProvider wrapping the main App component. Configures Convex client connection.
 
-**Key Files:**
-- `convex/schema.ts`: Database schema definition
-- `convex/auth.config.ts`: Authentication configuration
-- `convex/http.ts`: HTTP routes and API endpoints
-- `convex/router.ts`: User-defined HTTP routes (separate from auth routes)
+#### **UnlockFlow.tsx** - `UnlockFlow()`, `FlowContent()`
+Main orchestrator component providing ThemeProvider → FlowStateProvider → FlowContent hierarchy.
+FlowContent renders HeaderTitle, HeaderSubtitle, SyncStatusBar, and HorizontalFlowLayout.
 
-**Authentication Flow:**
-The app uses Convex Auth with anonymous authentication for easy sign-in. Authentication routes are protected in `convex/http.ts` and should not be modified directly.
 
-### Path Aliases
-TypeScript is configured with path aliases:
-- `@/*` maps to `./src/*`
+### Provider Components
 
-This allows imports like `import { utils } from '@/lib/utils'`
+#### **ThemeProvider.tsx** - `ThemeProvider(props: { children: React.ReactNode })`, `useTheme()`
+Provides dark theme color context with predefined color scheme (background, text, accent, success, warning, error, border).
+Exports useTheme hook for consuming theme colors throughout the app.
 
-## Convex-Specific Guidelines
+#### **FlowStateProvider.tsx** - `FlowStateProvider(props: { children: ReactNode })`, `useFlowState()`
+Central state management for flow navigation, completion tracking, and Notion data.
+Manages currentStage, currentSubstep, completedStages/Substeps sets, and integrates real-time Convex queries.
+Provides triggerSync action and phase grouping logic for 4-column timeline layout.
 
-Follow the Convex guidelines from `.cursor/rules/convex_rules.mdc`:
-- Use the new function syntax for all Convex functions
-- Include argument and return validators for all functions
-- Use `v.null()` for null returns
-- Prefer indexes over filters in queries
-- Use file-based routing for function references
+#### **StageDataProvider.tsx** - `StageDataProvider(props: { children: React.ReactNode })`, `useStageData()`
+Provides static stage data with hardcoded 5-stage workflow (Enter Site, Verify, Unlock, Download, Install).
+Each stage contains id, name, icon type, completion status, and array of substeps.
 
-## Recent Changes
+### Layout Components
 
-**Dropdown UI to Always-Visible Substeps (Latest):**
-- Converted from dropdown/toggle behavior to always-visible substeps
-- Removed `expandedStage` state from `FlowStateProvider`
-- Simplified `StageClickHandler` to handle stage selection only
-- Modified `UnlockFlow` to render `VerticalSubstepList` directly without conditional visibility
-- All substeps now display permanently beneath each stage node
+#### **FlowContainer.tsx** - `FlowContainer(props: { children: React.ReactNode })`
+Main container wrapper applying theme colors, padding, border radius, and responsive centering.
+Sets max width constraints and provides primary visual boundary for the timeline interface.
 
-## Important Notes
+#### **HorizontalFlowLayout.tsx** - `HorizontalFlowLayout()`
+Core timeline layout rendering project phases in horizontal 4-column grid.
+Manages task cards, modal interactions, phase ordering, loading states, and connection arrows.
+Integrates TaskCard and TaskModal for comprehensive task display and interaction.
 
-- The project is connected to Convex deployment: `sincere-bullfrog-704`
-- HTTP routes in `convex/router.ts` are kept separate from authentication routes
-- The frontend code is in `src/` (not `app/` as mentioned in README)
-- Authentication is handled by Convex Auth with anonymous sign-in enabled
-- Run `npm run lint` before making any commits to ensure TypeScript and build validation
+#### **StageRow.tsx** - `StageRow(props: { children: React.ReactNode })`
+Horizontal flexbox container with center alignment, gap spacing, and responsive wrapping.
+Provides consistent spacing and alignment for stage-related elements.
 
-## Project Goals & Strategy
+#### **SubstepGrid.tsx** - `SubstepGrid()`
+Grid layout displaying substeps across multiple stages using useStageData and useFlowState.
+Creates responsive grid based on stage count with interactive substep elements.
 
-**Primary Objective**: Build a compelling portfolio piece that demonstrates technical excellence and can be sold as a complete solution.
+#### **VerticalSubstepList.tsx** - `VerticalSubstepList(props: { children: React.ReactNode })`
+Simple vertical flexbox container for linear substep arrangement with consistent spacing.
 
-**Development Philosophy**:
-- **Speed over perfection**: Rapid development and implementation take priority over extensive requirements gathering
-- **Portfolio-first**: Every feature should showcase technical skills and demonstrate real-world applicability
-- **Sellable product**: Code should be production-ready and transferable to potential buyers/clients
-- **No extended planning phases**: Avoid months of requirements gathering - build, iterate, and refine quickly
+### Display Components
 
-**Success Metrics**:
-- Technical demonstration value for portfolio
-- Code quality that attracts potential buyers
-- Feature completeness that shows real-world application
-- Architecture that can scale and be transferred to other teams
+#### **HeaderTitle.tsx** - `HeaderTitle()`
+Main title component displaying "PROJECT TIMELINE" with bold 2rem font and theme text color.
 
-## Local Documentation
+#### **HeaderSubtitle.tsx** - `HeaderSubtitle()`
+Subtitle component showing "ACCESS ALBERTA LEGAL SERVICES" with accent color and letter spacing.
 
-This file serves as local documentation that Claude Code reads automatically on startup, reducing the need for web searches. Add project-specific information here to improve Claude's context awareness without internet lookups.
+#### **StageLabel.tsx** - `StageLabel(props: { text: string; isActive?: boolean; isComplete?: boolean })`
+Dynamic stage name labels with state-based styling (color, font weight) based on active/complete status.
+
+#### **SubstepText.tsx** - `SubstepText(props: { content: string; isActive?: boolean; isComplete?: boolean })`
+Substep content text with conditional styling and strikethrough decoration for completed items.
+
+#### **TaskCard.tsx** - `TaskCard(props: { task: NotionTask; taskNumber: string; onClick?: Function })`
+Compact clickable task cards showing task number, truncated title, status dot, and priority badge.
+Features hover effects and integrates with task modal for detailed view.
+
+#### **TaskModal.tsx** - `TaskModal(props: { task: NotionTask | null; isOpen: boolean; onClose: Function; taskNumber?: string })`
+Full-screen modal for detailed task information with sections for status, description, priority, timeline, and references.
+Includes keyboard navigation, clipboard functionality, and direct Notion links.
+
+#### **InteractiveIndicator.tsx** - `InteractiveIndicator()`
+Badge component displaying "INTERACTIVE" with glowing border effect using theme accent color.
+
+#### **VersionIndicator.tsx** - `VersionIndicator()`
+Simple version text display showing "4.0 Final Update from" with secondary text styling.
+
+### Interactive Components
+
+#### **ActionButton.tsx** - `ActionButton(props: { text: string; onClick: Function; variant?: 'primary' | 'secondary'; disabled?: boolean })`
+Customizable button with primary/secondary variants, disabled states, glow effects, and smooth transitions.
+
+#### **StageClickHandler.tsx** - `StageClickHandler(props: { stageId: string; children: React.ReactNode })`
+Wrapper component making children clickable for stage selection via setCurrentStage.
+
+#### **SubstepClickHandler.tsx** - `SubstepClickHandler(props: { substepId: string; children: React.ReactNode })`
+Interactive wrapper handling substep selection and completion with hover effects and transitions.
+
+### Animation Components
+
+#### **GlowEffect.tsx** - `GlowEffect(props: { children: React.ReactNode; color: string; intensity?: number; isActive?: boolean })`
+Wrapper applying customizable glowing drop-shadow effects with intensity control and smooth transitions.
+
+#### **PulseAnimation.tsx** - `PulseAnimation(props: { children: React.ReactNode; isActive?: boolean })`
+Wrapper applying pulsing opacity animation cycling between 100% and 70% opacity every 2 seconds.
+
+### Status Components
+
+#### **SubstepStatus.tsx** - `SubstepStatus(props: { complete: boolean; hasWarning?: boolean; hasError?: boolean; isActive?: boolean })`
+Status indicator showing checkmarks, warnings, errors, or circles based on substep state with theme colors.
+
+#### **SyncStatusBar.tsx** - `SyncStatusBar()`
+Status bar displaying sync information, last sync time, record count, and manual refresh button with SVG icon.
+Shows colored dots for recent sync indicators and responsive design.
+
+#### **FailSafeIndicator.tsx** - `FailSafeIndicator()`
+Warning indicator displaying "FAIL-SAFE ACTIVE" with warning icon and semi-transparent styling.
+
+### Visual Components
+
+#### **StageIcon.tsx** - `StageIcon(props: { type: 'play' | 'verify' | 'unlock' | 'download' | 'install'; isActive?: boolean; isComplete?: boolean })`
+Icon component displaying emoji symbols (▶️, ✓, 🔓, ⬇️, ⚙️) with dynamic color changes based on state.
+
+#### **StageNode.tsx** - `StageNode(props: { iconType: StageIconType; isActive?: boolean; isComplete?: boolean; children?: React.ReactNode })`
+Circular node wrapper for StageIcon with dynamic borders, glow effects, shadows, and smooth transitions.
+
+#### **ConnectionArrow.tsx** - `ConnectionArrow(props: { isActive?: boolean })`
+SVG arrow component connecting stages with active state color changes and glow effects.
+
+#### **ProgressBar.tsx** - `ProgressBar(props: { percentage: number })`
+Visual progress indicator with filled bar, smooth width transitions, and subtle glow effects.
+
+#### **SubstepNumber.tsx** - `SubstepNumber(props: { value: string; isActive?: boolean; isComplete?: boolean })`
+Number display for substep identification with state-based styling and consistent spacing.
+
+### Utility Functions
+
+#### **utils.ts** - `cn(...inputs: ClassValue[])`
+Utility function combining clsx and tailwind-merge for conditional className merging.
+Enables clean conditional CSS class application throughout components.
+
+---
+
+## Convex Backend Functions
+
+### Database Schema (`schema.ts`)
+
+#### **Tables:**
+- **notion_sync_meta**: Tracks sync status, timestamps, record counts, and error messages per database
+- **notion_records**: Stores transformed Notion data with properties, metadata, and indexing
+
+### Demo Functions (`demo.ts`)
+
+#### **triggerNotionSync** - `action({ databaseId: string, forceFullSync?: boolean })`
+Manual sync trigger action that fetches data from Notion API and updates local records.
+Handles error states, updates sync metadata, and returns sync results.
+
+#### **getProjectTimeline** - `query({ phase?: string, status?: string, priority?: string, limit?: number })`
+Frontend query for retrieving filtered project timeline data from cached Notion records.
+Supports filtering by phase, status, priority with optional result limiting.
+
+#### **getSyncStatus** - `query({})`
+Returns current synchronization status including last sync time, record count, and error states.
+
+
+### Notion Sync Functions (`notion/sync.ts`)
+
+#### **syncNotionDatabase** - `action({ databaseId: string, forceFullSync?: boolean })`
+Core sync action fetching changes from Notion, transforming data, and batch upserting to Convex.
+Manages sync metadata updates and comprehensive error handling with status tracking.
+
+#### **batchUpsertRecords** - `internalMutation({ databaseId: string, records: NotionRecord[] })`
+Internal mutation for batch inserting/updating Notion records with duplicate detection.
+Compares lastModified timestamps to avoid unnecessary updates.
+
+#### **updateSyncMeta** - `internalMutation({ databaseId, status, errorMessage?, recordCount, lastSyncTime })`
+Internal mutation updating sync metadata table with current sync status and statistics.
+
+#### **getLastSyncMeta** - `internalQuery({ databaseId: string })`
+Internal query retrieving last sync metadata for incremental sync operations.
+
+#### **getRecords** - `query({ databaseId, filters?, sortBy?, sortDirection?, limit? })`
+Public query for frontend data retrieval with comprehensive filtering, sorting, and pagination.
+Supports filtering by status, phase, priority, week with multiple sort options.
+
+#### **getSyncStatus** - `query({ databaseId: string })`
+Public query returning sync status information for frontend display including error messages.
+
+### Notion Client (`lib/notionClient.ts`)
+
+#### **NotionSyncClient** - Class for Notion API integration
+- **constructor(apiKey: string)**: Initializes Notion client with API key
+- **fetchDatabaseChanges(databaseId, lastSync?)**: Fetches database changes since last sync with filtering
+- **transformNotionPage(notionPage)**: Transforms raw Notion data to standardized format
+- **extractTitle(properties)**: Extracts page title from Notion properties
+- **transformProperties(properties)**: Converts Notion properties to camelCase with type handling
+- **extractPropertyValue(property)**: Handles different Notion property types (title, rich_text, number, select, etc.)
+- **camelCase(str)**: Utility for converting strings to camelCase format
+
+### HTTP Routing (`http.ts`, `router.ts`)
+
+#### **http.ts** - Basic HTTP router setup (currently empty)
+#### **router.ts** - User-defined routes (currently empty)
+
+---
+
+## Integration Overview
+
+**Data Flow:**
+1. Notion Database → NotionSyncClient.fetchDatabaseChanges()
+2. Raw data → transformNotionPage() → NotionRecord format
+3. NotionRecord[] → batchUpsertRecords() → Convex database
+4. Frontend queries getProjectTimeline() → React components
+5. UI updates trigger manual sync via triggerNotionSync()
+
+**State Management:**
+- FlowStateProvider centralizes navigation, completion tracking, and Notion data
+- ThemeProvider provides consistent dark theme across components
+- StageDataProvider supplies static workflow stage definitions
+
+
+## Summary
+
+**Component Inventory:**
+- **React Components**: 27 total (no authentication components)
+  - Main App Components: 3 (App, main.tsx, UnlockFlow)
+  - Provider Components: 3 (Theme, FlowState, StageData)
+  - Layout Components: 5 (FlowContainer, HorizontalFlowLayout, StageRow, SubstepGrid, VerticalSubstepList)
+  - Display Components: 7 (HeaderTitle, HeaderSubtitle, StageLabel, SubstepText, TaskCard, TaskModal, InteractiveIndicator, VersionIndicator)
+  - Interactive Components: 3 (ActionButton, StageClickHandler, SubstepClickHandler)
+  - Animation Components: 2 (GlowEffect, PulseAnimation)
+  - Status Components: 3 (SubstepStatus, SyncStatusBar, FailSafeIndicator)
+  - Visual Components: 5 (StageIcon, StageNode, ConnectionArrow, ProgressBar, SubstepNumber)
+  - Utility: 1 (utils.ts)
+
+- **Convex Functions**: 11 total (no authentication functions)
+  - Demo Functions: 3 (triggerNotionSync, getProjectTimeline, getSyncStatus)
+  - Notion Sync Functions: 6 (syncNotionDatabase, batchUpsertRecords, updateSyncMeta, getLastSyncMeta, getRecords, getSyncStatus)
+  - Notion Client Class: 1 with 6 methods
+  - HTTP Routing: 1 (basic setup, currently empty)
+
+This overview provides agents with comprehensive understanding of component relationships, data flows, and function signatures for effective codebase navigation and modification.

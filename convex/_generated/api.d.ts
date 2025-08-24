@@ -8,7 +8,6 @@
  * @module
  */
 
-import type * as auth from "../auth.js";
 import type * as demo from "../demo.js";
 import type * as http from "../http.js";
 import type * as lib_notionClient from "../lib/notionClient.js";
@@ -30,7 +29,6 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  auth: typeof auth;
   demo: typeof demo;
   http: typeof http;
   "lib/notionClient": typeof lib_notionClient;
