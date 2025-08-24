@@ -8,6 +8,7 @@ interface TaskModalProps {
     properties: {
       status: "Not Started" | "In Progress" | "Completed";
       priority: "Critical" | "High" | "Medium" | "Low";
+      assignee?: string;
       description: string;
       week: number;
       phase: string;
@@ -18,6 +19,28 @@ interface TaskModalProps {
   onClose: () => void;
   taskNumber?: string;
 }
+
+const getAssigneeColor = (assignee?: string) => {
+  if (!assignee) return 'text-gray-400';
+  
+  // Create consistent colors for different assignees
+  const colors = [
+    'text-cyan-400',
+    'text-purple-400',
+    'text-green-400',
+    'text-yellow-400',
+    'text-pink-400',
+    'text-blue-400'
+  ];
+  
+  // Simple hash to consistently assign colors to names
+  let hash = 0;
+  for (let i = 0; i < assignee.length; i++) {
+    hash = assignee.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  
+  return colors[Math.abs(hash) % colors.length];
+};
 
 const getPriorityColor = (priority: string) => {
   switch (priority) {
@@ -64,41 +87,39 @@ const getStatusDetails = (status: string) => {
   }
 };
 
-const getPriorityDetails = (priority: string) => {
-  switch (priority) {
-    case 'Critical':
-      return {
-        description: 'Urgent task that requires immediate attention and blocks other work.',
-        impact: 'High impact on project timeline and success.'
-      };
-    case 'High':
-      return {
-        description: 'Important task that should be prioritized and completed soon.',
-        impact: 'Significant impact on project progress.'
-      };
-    case 'Medium':
-      return {
-        description: 'Standard task that should be completed within the planned timeframe.',
-        impact: 'Moderate impact on project flow.'
-      };
-    case 'Low':
-      return {
-        description: 'Nice-to-have task that can be completed when time allows.',
-        impact: 'Low impact on immediate project goals.'
-      };
-    default:
-      return {
-        description: 'Task priority not specified.',
-        impact: 'Impact assessment needed.'
-      };
+const getAssigneeInitials = (assignee?: string) => {
+  if (!assignee) return '??';
+  
+  const names = assignee.split(' ');
+  if (names.length >= 2) {
+    return names[0][0].toUpperCase() + names[names.length - 1][0].toUpperCase();
   }
+  return assignee.substring(0, 2).toUpperCase();
+};
+
+const getAssigneeDetails = (assignee?: string) => {
+  if (!assignee) {
+    return {
+      display: 'Unassigned',
+      description: 'This task has not been assigned to a developer yet.',
+      initials: '??',
+      color: 'text-gray-400'
+    };
+  }
+  
+  return {
+    display: assignee,
+    description: `This task is assigned to ${assignee}`,
+    initials: getAssigneeInitials(assignee),
+    color: getAssigneeColor(assignee)
+  };
 };
 
 export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, taskNumber }) => {
   if (!isOpen || !task) return null;
 
   const statusDetails = getStatusDetails(task.properties.status);
-  const priorityDetails = getPriorityDetails(task.properties.priority);
+  const assigneeDetails = getAssigneeDetails(task.properties.assignee);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
@@ -152,9 +173,14 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
           </h2>
           
           <div className="flex items-center gap-4 mt-4">
-            <span className={`px-3 py-1 rounded-full border text-sm font-medium ${getPriorityColor(task.properties.priority)}`}>
-              {task.properties.priority} Priority
-            </span>
+            <div className="flex items-center gap-2">
+              <div className={`w-8 h-8 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center ${assigneeDetails.color} font-mono text-xs font-bold`}>
+                {assigneeDetails.initials}
+              </div>
+              <span className={`font-mono text-sm ${assigneeDetails.color}`}>
+                {assigneeDetails.display}
+              </span>
+            </div>
             <span className="text-gray-400 font-mono font-medium">
               Week {task.properties.week}
             </span>
@@ -195,16 +221,31 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
             </div>
           )}
 
-          {/* Priority Details Section */}
+          {/* Assignee Details Section */}
           <div>
-            <h3 className="font-semibold font-mono text-white text-lg mb-3">🎯 Priority Information</h3>
-            <div className="bg-gray-900 rounded-lg p-4 border border-gray-700 space-y-2">
-              <p className="text-gray-300 font-mono text-sm">
-                <span className="font-medium text-gray-400">Level:</span> {priorityDetails.description}
-              </p>
-              <p className="text-gray-300 font-mono text-sm">
-                <span className="font-medium text-gray-400">Impact:</span> {priorityDetails.impact}
-              </p>
+            <h3 className="font-semibold font-mono text-white text-lg mb-3">👤 Assignment Information</h3>
+            <div className="bg-gray-900 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-start gap-4">
+                <div className={`w-12 h-12 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center ${assigneeDetails.color} font-mono text-lg font-bold`}>
+                  {assigneeDetails.initials}
+                </div>
+                <div className="flex-1">
+                  <p className={`font-mono font-semibold ${assigneeDetails.color} text-lg`}>
+                    {assigneeDetails.display}
+                  </p>
+                  <p className="text-gray-400 font-mono text-sm mt-1">
+                    {assigneeDetails.description}
+                  </p>
+                  {task.properties.priority && (
+                    <div className="mt-3 flex items-center gap-2">
+                      <span className="text-gray-500 font-mono text-xs">Priority:</span>
+                      <span className={`px-2 py-0.5 rounded text-xs font-mono ${getPriorityColor(task.properties.priority)}`}>
+                        {task.properties.priority}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
