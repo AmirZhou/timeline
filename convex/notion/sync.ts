@@ -10,15 +10,15 @@ export const syncNotionDatabase = action({
     forceFullSync: v.optional(v.boolean())
   },
   handler: async (ctx, { databaseId, forceFullSync = false }) => {
+    // Get last sync metadata (declare at function scope)
+    const lastSync = await ctx.runQuery(internal.notion.sync.getLastSyncMeta, { databaseId });
+    
     try {
       // Get Notion API key from environment
       const notionApiKey = process.env.NOTION_API_KEY;
       if (!notionApiKey) {
         throw new Error("NOTION_API_KEY not configured");
       }
-
-      // Get last sync metadata
-      const lastSync = await ctx.runQuery(internal.notion.sync.getLastSyncMeta, { databaseId });
       
       // Initialize Notion client and fetch changes
       const client = new NotionSyncClient(notionApiKey);
@@ -39,12 +39,12 @@ export const syncNotionDatabase = action({
         console.log(`Successfully synced ${changes.length} records from Notion`);
       }
       
-      // Update sync metadata
+      // Update sync metadata with current time to prevent gaps in future syncs
       await ctx.runMutation(internal.notion.sync.updateSyncMeta, {
         databaseId,
         status: "success",
         recordCount: changes.length,
-        lastSyncTime: Date.now()
+        lastSyncTime: Date.now()  // Use sync completion time, not record timestamps
       });
       
       return { success: true, synced: changes.length };
@@ -52,13 +52,13 @@ export const syncNotionDatabase = action({
     } catch (error) {
       console.error("Notion sync failed:", error);
       
-      // Update sync metadata with error
+      // Update sync metadata with error - preserve previous sync time to retry missed records
       await ctx.runMutation(internal.notion.sync.updateSyncMeta, {
         databaseId,
         status: "error",
         errorMessage: error instanceof Error ? error.message : String(error),
         recordCount: 0,
-        lastSyncTime: Date.now()
+        lastSyncTime: lastSync?.lastSyncTime || Date.now()
       });
       
       throw error;
