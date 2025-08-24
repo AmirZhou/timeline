@@ -8,7 +8,7 @@ export const triggerNotionSync = action({
     forceFullSync: v.optional(v.boolean())
   },
   handler: async (ctx: ActionCtx, { forceFullSync = false }): Promise<{ success: boolean; synced: number }> => {
-    const databaseId = "2584f2e11dba819eb0f5fc54bff7b13f"; // Your project timeline database
+    const databaseId = "2584f2e1-1dba-819e-b0f5-fc54bff7b13f"; // Your project timeline database
     
     try {
       const result: any = await ctx.runAction(api.notion.sync.syncNotionDatabase, {
@@ -34,7 +34,7 @@ export const getProjectTimeline = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx: QueryCtx, filters): Promise<any[]> => {
-    const databaseId = "2584f2e11dba819eb0f5fc54bff7b13f";
+    const databaseId = "2584f2e1-1dba-819e-b0f5-fc54bff7b13f";
     
     return await ctx.runQuery(api.notion.sync.getRecords, {
       databaseId,
@@ -49,7 +49,7 @@ export const getProjectTimeline = query({
 // Demo query to get current sync status (safe to check anytime)
 export const getSyncStatus = query({
   handler: async (ctx: QueryCtx): Promise<any> => {
-    const databaseId = "2584f2e11dba819eb0f5fc54bff7b13f";
+    const databaseId = "2584f2e1-1dba-819e-b0f5-fc54bff7b13f";
     
     return await ctx.runQuery(api.notion.sync.getSyncStatus, {
       databaseId

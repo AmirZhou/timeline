@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useMemo } from 'react';
 import { useQuery, useAction } from "convex/react";
-import { api } from "../../../convex-api";
+import { api } from "../../../convex/_generated/api";
 
 interface FlowState {
   currentStage: string;
