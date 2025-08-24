@@ -153,13 +153,6 @@ export const VerticalTimelineLayout: React.FC = () => {
       <div className="block md:hidden max-w-4xl mx-auto py-8">
         <MobileTimeline />
         
-        {/* Mobile Fail-Safe Indicator */}
-        <div className="relative flex items-center ml-6 mt-12">
-          <div className="absolute -left-6 w-4 h-4 bg-white transform rotate-45 border-2 border-gray-600"></div>
-          <div className="ml-8 text-white font-mono text-sm tracking-wide">
-            FAIL-SAFE
-          </div>
-        </div>
       </div>
 
       {/* Desktop Layout: Two Columns */}
@@ -172,15 +165,6 @@ export const VerticalTimelineLayout: React.FC = () => {
           <TimelineColumn items={rightColumnItemsWithSpacing} columnIndex={1} />
         </div>
         
-        {/* Desktop Centered Bottom Fail-Safe Indicator */}
-        <div className="flex justify-center mt-12">
-          <div className="relative flex items-center">
-            <div className="w-4 h-4 bg-white transform rotate-45 border-2 border-gray-600"></div>
-            <div className="ml-4 text-white font-mono text-sm tracking-wide">
-              FAIL-SAFE
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Task Detail Modal */}

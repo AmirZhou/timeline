@@ -20,6 +20,18 @@ interface TaskModalProps {
   taskNumber?: string;
 }
 
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'Completed':
+      return 'text-green-400';
+    case 'In Progress':
+      return 'text-yellow-400';
+    case 'Not Started':
+    default:
+      return 'text-red-400';
+  }
+};
+
 const getAssigneeColor = (assignee?: string) => {
   if (!assignee) return 'text-gray-400';
   
@@ -61,28 +73,16 @@ const getStatusDetails = (status: string) => {
   switch (status) {
     case 'Completed':
       return {
-        color: 'text-green-400',
-        bgColor: 'bg-gray-900 border-gray-700',
-        dotColor: 'bg-green-400',
-        icon: '✅',
-        description: 'This task has been completed successfully.'
+        dotColor: 'bg-green-400'
       };
     case 'In Progress':
       return {
-        color: 'text-yellow-400',
-        bgColor: 'bg-gray-900 border-gray-700',
-        dotColor: 'bg-yellow-400',
-        icon: '🔄',
-        description: 'This task is currently being worked on.'
+        dotColor: 'bg-yellow-400'
       };
     case 'Not Started':
     default:
       return {
-        color: 'text-red-400',
-        bgColor: 'bg-gray-900 border-gray-700',
-        dotColor: 'bg-red-400',
-        icon: '⏳',
-        description: 'This task has not been started yet.'
+        dotColor: 'bg-red-400'
       };
   }
 };
@@ -147,8 +147,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
             <div className="flex items-start gap-4 flex-1">
               <div className="flex items-center gap-3">
                 {taskNumber && (
-                  <span className="text-lg font-bold font-mono text-white bg-gray-800 border border-gray-600 px-3 py-1 rounded-lg">
-                    {taskNumber}
+                  <span className={`text-lg font-bold font-mono bg-gray-800 border border-gray-600 px-3 py-1 rounded-lg ${getStatusColor(task.properties.status)}`}>
+                    {taskNumber}: {task.properties.status}
                   </span>
                 )}
                 <SubstepStatus 
@@ -192,22 +192,6 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
 
         {/* Content */}
         <div className="p-6 space-y-6">
-          {/* Status Section */}
-          <div className={`rounded-lg border p-4 ${statusDetails.bgColor}`}>
-            <div className="flex items-start gap-3">
-              <div className="flex items-center justify-center w-8 h-8">
-                <div className={`w-3 h-3 ${statusDetails.dotColor} rounded-full animate-pulse`}></div>
-              </div>
-              <div>
-                <h3 className={`font-semibold font-mono ${statusDetails.color} text-lg`}>
-                  Status: {task.properties.status}
-                </h3>
-                <p className="text-gray-400 mt-1 font-mono text-sm">
-                  {statusDetails.description}
-                </p>
-              </div>
-            </div>
-          </div>
 
           {/* Description Section */}
           {task.properties.description && (
