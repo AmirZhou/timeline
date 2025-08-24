@@ -13,7 +13,7 @@ export const getProjectTimelineDirect = action({
     priority: v.optional(v.string()),
     limit: v.optional(v.number()),
   },
-  handler: async (ctx, filters) => {
+  handler: async (_ctx, filters) => {
     const databaseId = "2584f2e11dba819eb0f5fc54bff7b13f";
     const notionApiKey = process.env.NOTION_API_KEY;
     
@@ -50,10 +50,7 @@ export const getProjectTimelineDirect = action({
       console.log(`📦 Direct API: Retrieved ${data.results.length} records`);
       
       // Transform to match timeline format
-      const transformedRecords = data.results.map((page: any) => {
-        // Clean up - remove debug logs
-        // console.log(`📋 Debug properties for "${extractTitle(page.properties)}":`, Object.keys(page.properties));
-        
+      const transformedRecords = data.results.map((page: any) => {        
         return {
           _id: `notion_${page.id}`, // Fake ID for compatibility
           _creationTime: new Date(page.created_time).getTime(),
@@ -62,6 +59,7 @@ export const getProjectTimelineDirect = action({
           properties: {
             week: extractWeek(page.properties),
             phase: extractPhase(page.properties),
+            phaseNumber: extractPhaseNumber(page.properties),
             status: extractStatus(page.properties),
             priority: extractPriority(page.properties),
             assignee: extractAssignee(page.properties),
@@ -263,6 +261,18 @@ function extractDueDate(properties: any): string | undefined {
   try {
     const dueProp = properties['oY^i'];
     return dueProp?.date?.start || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function extractPhaseNumber(properties: any): number | undefined {
+  try {
+    const phaseNumProp = properties['%60uWQ'];
+    if (phaseNumProp?.number !== undefined) {
+      return phaseNumProp.number;
+    }
+    return undefined;
   } catch {
     return undefined;
   }

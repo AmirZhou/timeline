@@ -1,14 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTimelineState } from '../providers/TimelineStateProvider';
 import { TimelineNode } from '../display/TimelineNode';
 import { TaskModal } from '../display/TaskModal';
-
-const phaseOrder = [
-  "Phase 1: Foundation & Legal Framework",
-  "Phase 2: Core Development & Demo Preparation", 
-  "Phase 3: Advanced Features & User Testing",
-  "Phase 4: Polish & Market Package"
-];
 
 export const VerticalTimelineLayout: React.FC = () => {
   const { phases, isLoading } = useTimelineState();
@@ -28,6 +21,55 @@ export const VerticalTimelineLayout: React.FC = () => {
     setSelectedTaskNumber('');
   };
 
+  // Create timeline items from tasks using dynamic phase numbers
+  const timelineItems = useMemo(() => {
+    if (isLoading || !phases) {
+      return [];
+    }
+    const items: Array<{
+      task: any;
+      taskNumber: string;
+      phaseTitle: string;
+      isPhaseStart: boolean;
+      phaseNumber: number;
+    }> = [];
+
+    // Group all tasks by phase number
+    const tasksByPhaseNumber: { [phaseNum: number]: any[] } = {};
+    
+    Object.values(phases).flat().forEach((task: any) => {
+      const phaseNumber = task.properties.phaseNumber || 1; // Default to 1 if missing
+      if (!tasksByPhaseNumber[phaseNumber]) {
+        tasksByPhaseNumber[phaseNumber] = [];
+      }
+      tasksByPhaseNumber[phaseNumber].push(task);
+    });
+
+    // Sort phase numbers and create timeline items
+    const sortedPhaseNumbers = Object.keys(tasksByPhaseNumber)
+      .map(num => parseInt(num))
+      .sort((a, b) => a - b);
+
+    sortedPhaseNumbers.forEach((phaseNumber) => {
+      const phaseTasks = tasksByPhaseNumber[phaseNumber];
+      
+      phaseTasks.forEach((task: any, taskIndex: number) => {
+        const taskNumber = `${phaseNumber}.${taskIndex + 1}`;
+        const phaseTitle = task.properties.phase?.split(': ')[1] || `Phase ${phaseNumber}`;
+        
+        items.push({
+          task,
+          taskNumber,
+          phaseTitle,
+          phaseNumber,
+          isPhaseStart: taskIndex === 0
+        });
+      });
+    });
+
+    return items;
+  }, [phases, isLoading]);
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -37,45 +79,20 @@ export const VerticalTimelineLayout: React.FC = () => {
     );
   }
 
-  // Flatten all tasks into a single timeline
-  const timelineItems: Array<{
-    task: any;
-    taskNumber: string;
-    phaseTitle: string;
-    isPhaseStart: boolean;
-  }> = [];
-
-  phaseOrder.forEach((phaseName, phaseIndex) => {
-    const tasks = phases[phaseName] || [];
-    const phaseNum = phaseIndex + 1;
-    
-    tasks.forEach((task: any, taskIndex: number) => {
-      const taskNumber = `${phaseNum}.${taskIndex + 1}`;
-      timelineItems.push({
-        task,
-        taskNumber,
-        phaseTitle: phaseName.split(': ')[1] || phaseName,
-        isPhaseStart: taskIndex === 0
-      });
-    });
-  });
-
-  // Split timeline items into two columns: Phases 1&2 left, Phases 3&4 right
+  // Split timeline items into two columns: Phases 1&2 left, Phases 3+ right
   const leftColumnItems = timelineItems.filter((item) => {
-    const phaseNum = parseInt(item.taskNumber.split('.')[0]);
-    return phaseNum <= 2;
+    return item.phaseNumber <= 2;
   });
   
   const rightColumnItems = timelineItems.filter((item) => {
-    const phaseNum = parseInt(item.taskNumber.split('.')[0]);
-    return phaseNum >= 3;
+    return item.phaseNumber >= 3;
   });
 
   // Add phase spacing by detecting phase transitions
   const timelineItemsWithSpacing = timelineItems.map((item, index) => {
     const prevItem = index > 0 ? timelineItems[index - 1] : null;
-    const currentPhase = parseInt(item.taskNumber.split('.')[0]);
-    const prevPhase = prevItem ? parseInt(prevItem.taskNumber.split('.')[0]) : 0;
+    const currentPhase = item.phaseNumber;
+    const prevPhase = prevItem ? prevItem.phaseNumber : 0;
     const isNewPhase = currentPhase !== prevPhase;
     
     return {
@@ -86,13 +103,11 @@ export const VerticalTimelineLayout: React.FC = () => {
 
   // Update filtered items with spacing info
   const leftColumnItemsWithSpacing = timelineItemsWithSpacing.filter((item) => {
-    const phaseNum = parseInt(item.taskNumber.split('.')[0]);
-    return phaseNum <= 2;
+    return item.phaseNumber <= 2;
   });
   
   const rightColumnItemsWithSpacing = timelineItemsWithSpacing.filter((item) => {
-    const phaseNum = parseInt(item.taskNumber.split('.')[0]);
-    return phaseNum >= 3;
+    return item.phaseNumber >= 3;
   });
 
   const TimelineColumn: React.FC<{ items: typeof timelineItemsWithSpacing, columnIndex: number }> = ({ items, columnIndex }) => (
@@ -153,13 +168,6 @@ export const VerticalTimelineLayout: React.FC = () => {
       <div className="block md:hidden max-w-4xl mx-auto py-8">
         <MobileTimeline />
         
-        {/* Mobile Fail-Safe Indicator */}
-        <div className="relative flex items-center ml-6 mt-12">
-          <div className="absolute -left-6 w-4 h-4 bg-white transform rotate-45 border-2 border-gray-600"></div>
-          <div className="ml-8 text-white font-mono text-sm tracking-wide">
-            FAIL-SAFE
-          </div>
-        </div>
       </div>
 
       {/* Desktop Layout: Two Columns */}
@@ -172,15 +180,6 @@ export const VerticalTimelineLayout: React.FC = () => {
           <TimelineColumn items={rightColumnItemsWithSpacing} columnIndex={1} />
         </div>
         
-        {/* Desktop Centered Bottom Fail-Safe Indicator */}
-        <div className="flex justify-center mt-12">
-          <div className="relative flex items-center">
-            <div className="w-4 h-4 bg-white transform rotate-45 border-2 border-gray-600"></div>
-            <div className="ml-4 text-white font-mono text-sm tracking-wide">
-              FAIL-SAFE
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Task Detail Modal */}

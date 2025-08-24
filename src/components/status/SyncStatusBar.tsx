@@ -33,26 +33,13 @@ export const SyncStatusBar: React.FC = () => {
   };
 
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${isRecent ? 'bg-green-500' : 'bg-gray-400'} ${isSyncing ? 'animate-pulse' : ''}`}></div>
-            <span className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-1 rounded">DIRECT API</span>
-          </div>
+          <div className={`w-2 h-2 rounded-full ${isRecent ? 'bg-green-500' : 'bg-gray-400'} ${isSyncing ? 'animate-pulse' : ''}`}></div>
           <span className="text-sm text-gray-600">
-            Last fetched: <span className="font-medium text-gray-900">{lastSyncTime}</span>
+            Last synced: <span className="font-medium text-gray-900">{lastSyncTime}</span>
           </span>
-          {syncStatus.recordCount > 0 && (
-            <span className="text-sm text-gray-500 ml-2">
-              ({syncStatus.recordCount} records)
-            </span>
-          )}
-          {syncDelay && (
-            <span className="text-xs text-gray-500 ml-2">
-              ({syncDelay}s fetch time)
-            </span>
-          )}
         </div>
         <button 
           onClick={handleSync}
@@ -78,18 +65,6 @@ export const SyncStatusBar: React.FC = () => {
         </button>
       </div>
       
-      {showDelayWarning && (
-        <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-          <div className="flex items-center gap-2">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 13C11.45 13 11 12.55 11 12V8C11 7.45 11.45 7 12 7C12.55 7 13 7.45 13 8V12C13 12.55 12.55 13 12 13ZM13 17H11V15H13V17Z" fill="currentColor" className="text-yellow-600"/>
-            </svg>
-            <span className="text-sm text-yellow-800">
-              Direct API bypasses caching - all data is fresh from Notion! No propagation delays.
-            </span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
