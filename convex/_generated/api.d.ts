@@ -12,6 +12,8 @@ import type * as http from "../http.js";
 import type * as lib_notionClient from "../lib/notionClient.js";
 import type * as notion_sync from "../notion/sync.js";
 import type * as router from "../router.js";
+import type * as testing_networkLatency from "../testing/networkLatency.js";
+import type * as testing_notionTimeGate from "../testing/notionTimeGate.js";
 import type * as timeline from "../timeline.js";
 
 import type {
@@ -33,6 +35,8 @@ declare const fullApi: ApiFromModules<{
   "lib/notionClient": typeof lib_notionClient;
   "notion/sync": typeof notion_sync;
   router: typeof router;
+  "testing/networkLatency": typeof testing_networkLatency;
+  "testing/notionTimeGate": typeof testing_notionTimeGate;
   timeline: typeof timeline;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

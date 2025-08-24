@@ -1,104 +1,194 @@
-# TASK: Test Notion Database Time-Gate Hypothesis
+# Notion Time-Gate Hypothesis Testing Documentation
 
-## Context
-We've implemented a comprehensive Notion propagation delay detection system. However, further investigation suggests the issue isn't about sync timing, but about **Notion's internal time-gating mechanism for rapid database changes**.
+## Executive Summary
 
-## Hypothesis
-Notion appears to have a time-gate mechanism where:
-- **First change**: Works instantly when synced
-- **Rapid subsequent changes**: May not be saved to Notion's backend if made within ~30 seconds of the previous change
-- **UI deception**: Changes show in Notion's UI immediately, but aren't actually persisted to the API layer
+This document outlines our systematic testing approach to prove or disprove the **Notion Time-Gate Hypothesis**: that Notion has an internal time-gating mechanism where rapid successive changes may not be persisted to the API layer immediately, even though they appear in the UI.
 
-## Your Mission
+## Hypothesis Details
 
-### Test the Time-Gate Theory
-Create a systematic test to prove/disprove this hypothesis:
+### Core Theory
+- **First change**: Works instantly when synced via API
+- **Rapid subsequent changes**: May not be saved to Notion's backend if made within ~30-60 seconds
+- **UI deception**: Changes appear in Notion's UI immediately but aren't persisted to API
+- **Recovery time**: Time-gated changes should appear after 45-90 seconds
 
-1. **Baseline Test**:
-   - Make a single change in Notion (e.g., Assignee: Developer 1 → Developer 2)
-   - Wait 5 minutes (ensure clean state)
-   - Sync via our app → Should work instantly ✅
+### Test Implementation
 
-2. **Rapid Change Test**:
-   - Make first change: Assignee: Developer 2 → Developer 1
-   - Immediately make second change: Assignee: Developer 1 → Both Developers
-   - Sync via app immediately
-   - Expected result: Only first change appears, second change is time-gated
+We've implemented three systematic test scenarios:
 
-3. **Time Recovery Test**:
-   - After rapid changes, wait 45-60 seconds
-   - Sync again → Second change should now appear
+#### 1. Baseline Test (`testScenario: "baseline"`)
+**Purpose**: Establish that single changes work correctly
+**Method**: 
+- Monitor a record for 10 seconds to establish clean state
+- Expected: No time-gate behavior for isolated changes
 
-### Implementation Approach
-
-#### Option A: Automated Testing (Recommended)
-Extend the existing test endpoint `convex/timeline.ts:testPropagationDelay()` to:
-- Make controlled changes via Notion API (if write access available)
-- Test rapid-fire change scenarios
-- Document exact timing when changes become visible
-
-#### Option B: Manual Testing Protocol
-Create a systematic manual test procedure:
-- Detailed step-by-step instructions
-- Timing requirements
-- Expected vs actual results tracking
-- Multiple test runs for consistency
-
-### Key Files to Use
-
-**Existing Infrastructure:**
-- `convex/lib/notionClient.ts` - Notion API client with logging
-- `convex/notion/sync.ts:testNotionPropagationDelay` - Test framework
-- `convex/timeline.ts:testPropagationDelay` - Test endpoint
-- `src/components/status/NotionPropagationWarning.tsx` - New warning component
-
-**Database Details:**
-- **Database ID**: `2584f2e11dba819eb0f5fc54bff7b13f`
-- **Assignee Field**: `t[K\` (select property)
-- **Test Values**: "Developer 1", "Developer 2", "Both Developers", "External"
-
-### Success Criteria
-
-**Prove Time-Gate Exists:**
-- Document minimum time interval between changes (likely 30-60 seconds)
-- Show that rapid changes are lost (not just delayed)
-- Identify recovery time for time-gated changes
-
-**If Time-Gate Confirmed:**
-- Update `NotionPropagationWarning` component with accurate messaging
-- Add time-gate detection to sync logic
-- Recommend user workflow changes
-
-### Deliverables
-
-1. **Test Results Document**: Clear evidence supporting or refuting time-gate hypothesis
-2. **Code Updates**: Enhanced detection/warning systems if time-gate confirmed
-3. **User Guidance**: Updated UI messaging and workflow recommendations
-
-### Resources
-
-**Environment Setup:**
-```bash
-npm run dev  # Start development server
-npx convex dev  # Start Convex backend
-```
-
-**Test Endpoint Usage:**
+**API Call**:
 ```javascript
-// In Convex dashboard or browser console
-await api.timeline.testPropagationDelay({
-  delayIntervals: [5, 15, 30, 45, 60, 90] // Test longer intervals
+await api.timeline.testTimeGateHypothesis({
+  testScenario: "baseline",
+  taskId: "optional-specific-task-id"
 })
 ```
 
-**Log Monitoring:**
-- Browser Console: Frontend logs
-- Convex Dashboard: Backend sync logs
-- Look for patterns in `last_edited_time` vs actual field changes
+#### 2. Rapid Changes Test (`testScenario: "rapid_changes"`)
+**Purpose**: Detect time-gate behavior during rapid successive changes
+**Method**: 
+- Monitor record for 60 seconds with 10-second intervals
+- Look for timestamp updates without corresponding field changes
+- Expected: Time-gate suspects within 30 seconds of changes
 
-### Next Steps
-1. Run systematic tests to confirm time-gate behavior
-2. If confirmed, implement enhanced user warnings and workflow guidance
-3. Document findings for future Notion integration projects
+**API Call**:
+```javascript
+await api.timeline.testTimeGateHypothesis({
+  testScenario: "rapid_changes", 
+  taskId: "optional-specific-task-id"
+})
+```
 
-This investigation will help us provide accurate user expectations and optimal workflow recommendations for Notion database updates.
+#### 3. Recovery Test (`testScenario: "recovery"`)
+**Purpose**: Verify that time-gated changes eventually appear
+**Method**: 
+- Monitor at longer intervals (45s, 75s, 120s)
+- Detect recovery of previously time-gated changes
+- Expected: Changes appear after recovery period
+
+**API Call**:
+```javascript
+await api.timeline.testTimeGateHypothesis({
+  testScenario: "recovery",
+  taskId: "optional-specific-task-id"  
+})
+```
+
+## Testing Protocol
+
+### Environment Setup
+
+1. **Start Development Environment**:
+```bash
+npm run dev     # Frontend
+npx convex dev  # Backend
+```
+
+2. **Access Convex Dashboard**: https://dashboard.convex.dev
+3. **Navigate to Functions tab**
+4. **Use the `timeline` namespace**
+
+### Manual Testing Procedure
+
+#### Phase 1: Baseline Test
+1. **Wait for Clean State**: Ensure no changes to database for 5+ minutes
+2. **Run Baseline Test**:
+   ```javascript
+   await api.timeline.testTimeGateHypothesis({
+     testScenario: "baseline"
+   })
+   ```
+3. **Expected Result**: No anomalies, changes detected correctly
+
+#### Phase 2: Rapid Changes Test (Critical Phase)
+1. **Prepare for Manual Changes**: Identify a test record in Notion
+2. **Run Rapid Changes Test**:
+   ```javascript
+   await api.timeline.testTimeGateHypothesis({
+     testScenario: "rapid_changes"
+   })
+   ```
+3. **During Test Execution** (within first 30 seconds):
+   - **First Change**: Assignee: Current → "Developer 1"  
+   - **Immediate Second Change** (within 5-10 seconds): Assignee: "Developer 1" → "Developer 2"
+   - **Immediate Third Change** (within 5-10 seconds): Assignee: "Developer 2" → "Both Developers"
+4. **Monitor Console**: Look for time-gate suspect flags
+
+#### Phase 3: Recovery Test
+1. **After Rapid Changes**: Wait for previous test to complete
+2. **Run Recovery Test**:
+   ```javascript
+   await api.timeline.testTimeGateHypothesis({
+     testScenario: "recovery"
+   })
+   ```
+3. **Monitor for Recovery**: Look for changes that appear during longer intervals
+
+### Key Indicators
+
+#### Time-Gate Evidence
+- **🚨 TIME-GATE SUSPECT**: Recent timestamp update without visible field changes
+- **⚠️ VERY RECENT EDIT**: Changes within 10 seconds (high time-gate risk)
+- **🎉 RECOVERY DETECTED**: Previously time-gated change appears
+
+#### Log Analysis
+Look for patterns like:
+```
+📊 Monitor Results (20s):
+  - Assignee: Developer 1 → Developer 1 (same)
+  - Status: In Progress → In Progress (same)  
+  - Last edited: UPDATED
+  - Time since edit: 8s ago
+  🚨 TIME-GATE SUSPECT: Recent timestamp update without visible field changes!
+```
+
+## Database Information
+
+**Target Database**: `2584f2e11dba819eb0f5fc54bff7b13f`
+**Assignee Field**: Property ID `t[K\`
+**Test Values**: "Developer 1", "Developer 2", "Both Developers", "External"
+
+## Expected Outcomes
+
+### If Time-Gate Exists
+- **Rapid changes test**: Shows timestamp updates without field changes
+- **Recovery test**: Shows delayed appearance of changes after 45-90 seconds
+- **Pattern**: Changes visible in Notion UI but not via API immediately
+
+### If Time-Gate Doesn't Exist  
+- **All tests**: Show consistent immediate change detection
+- **No anomalies**: Timestamp updates always correspond to field changes
+- **Pattern**: API and UI stay synchronized
+
+## Next Steps Based on Results
+
+### If Time-Gate Confirmed
+1. **Update Warning Component**: Enhance `NotionPropagationWarning.tsx` with accurate messaging
+2. **Add Time-Gate Detection**: Implement detection logic in sync functions
+3. **User Guidance**: Recommend minimum 60-second intervals between changes
+4. **Documentation**: Update user documentation with time-gate awareness
+
+### If Time-Gate Disproved
+1. **Alternative Investigation**: Look for other causes of propagation delays
+2. **Network/API Issues**: Investigate Notion API response consistency
+3. **Cache Invalidation**: Review Notion's cache invalidation patterns
+
+## Test Execution Commands
+
+### Quick Start
+```javascript
+// Run all tests in sequence (recommended)
+await api.timeline.testTimeGateHypothesis({ testScenario: "baseline" })
+// Make rapid manual changes in Notion UI
+await api.timeline.testTimeGateHypothesis({ testScenario: "rapid_changes" }) 
+await api.timeline.testTimeGateHypothesis({ testScenario: "recovery" })
+```
+
+### Individual Tests
+```javascript
+// Baseline only
+await api.timeline.testTimeGateHypothesis({ testScenario: "baseline" })
+
+// Rapid changes only (do manual changes during execution)
+await api.timeline.testTimeGateHypothesis({ testScenario: "rapid_changes" })
+
+// Recovery only
+await api.timeline.testTimeGateHypothesis({ testScenario: "recovery" })
+```
+
+### Targeted Testing
+```javascript
+// Test specific record
+await api.timeline.testTimeGateHypothesis({ 
+  testScenario: "rapid_changes",
+  taskId: "2584f2e1-1dba-81d9-bbeb-d0c801e86f1f" 
+})
+```
+
+This comprehensive testing framework will provide definitive evidence for or against the Notion time-gate hypothesis, enabling us to provide accurate user guidance and optimize our sync strategy accordingly.

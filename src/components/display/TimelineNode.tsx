@@ -10,6 +10,7 @@ interface TimelineNodeProps {
       description: string;
       week: number;
       phase: string;
+      assignee?: string;
     };
     url: string;
   };
@@ -70,6 +71,11 @@ export const TimelineNode: React.FC<TimelineNodeProps> = ({
             <div className="text-white font-medium leading-relaxed">
               {task.title}
             </div>
+            {task.properties.assignee && (
+              <div className="text-gray-400 text-xs font-mono mt-1">
+                {task.properties.assignee}
+              </div>
+            )}
           </div>
           
           {/* Priority (subtle integration) */}

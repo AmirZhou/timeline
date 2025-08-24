@@ -10,6 +10,7 @@ interface TaskCardProps {
       description: string;
       week: number;
       phase: string;
+      assignee?: string;
     };
     url: string;
   };
@@ -71,6 +72,11 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, taskNumber, onClick })
       </div>
 
       <div className="flex items-center gap-2 flex-shrink-0">
+        {task.properties.assignee && (
+          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+            {task.properties.assignee}
+          </span>
+        )}
         {(task.properties.priority === 'Critical' || task.properties.priority === 'High') && (
           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(task.properties.priority)}`}>
             {task.properties.priority}

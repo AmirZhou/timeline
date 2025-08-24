@@ -39,7 +39,7 @@ export const TimelineStateProvider: React.FC<TimelineStateProviderProps> = ({ ch
     completedTasks: new Set(),
   });
 
-  // Real data from Notion via Convex
+  // Real data from Notion via Convex - Convex handles automatic invalidation
   const allTasks = useQuery(api.timeline.getProjectTimeline, {});
   const syncStatus = useQuery(api.timeline.getSyncStatus, {});
   const triggerSyncAction = useAction(api.timeline.triggerNotionSync);
@@ -78,8 +78,16 @@ export const TimelineStateProvider: React.FC<TimelineStateProviderProps> = ({ ch
     }));
   };
 
-  const triggerSync = () => {
-    triggerSyncAction({ forceFullSync: false });
+  const triggerSync = async () => {
+    console.log("🔄 Starting sync...");
+    try {
+      // TESTING: Always use full sync for reliability
+      const result = await triggerSyncAction({ forceFullSync: true });
+      console.log("✅ Sync completed:", result);
+      // Convex will automatically invalidate queries when database changes
+    } catch (error) {
+      console.error("❌ Sync failed:", error);
+    }
   };
 
   return (

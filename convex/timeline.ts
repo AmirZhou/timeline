@@ -71,3 +71,27 @@ export const testPropagationDelay = action({
     });
   }
 });
+
+// TEST ACTION: Legacy compatibility - redirects to original sync module test
+export const testTimeGateHypothesis = action({
+  args: {
+    testScenario: v.optional(v.union(v.literal("baseline"), v.literal("rapid_changes"), v.literal("recovery"))),
+    taskId: v.optional(v.string()) // Specific task to monitor
+  },
+  handler: async (ctx: ActionCtx, { testScenario = "baseline", taskId }): Promise<any> => {
+    // NOTE: Time-gate hypothesis has been DISPROVED (2025-08-24)
+    // This function now returns a summary instead of running tests
+    // Full test suite is available in convex/testing/notionTimeGate.ts
+    
+    return {
+      status: "HYPOTHESIS_DISPROVED",
+      date: "2025-08-24",
+      result: "Time-gate mechanism does not exist in Notion API",
+      evidence: "Rapid successive changes are immediately visible via API",
+      testScenario: testScenario,
+      recommendation: "Investigation should focus on network latency, caching, and rate limiting",
+      fullTestSuite: "Available in convex/testing/notionTimeGate.ts",
+      documentation: "See docs/NOTION-TIMEGATE-INVESTIGATION.md"
+    };
+  }
+});

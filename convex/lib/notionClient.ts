@@ -29,6 +29,7 @@ export class NotionSyncClient {
     for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
       const isRetry = attempt > 1;
       const fetchTimestamp = Date.now();
+      let requestStartTime = 0; // Initialize timing variable
       
       console.log(`\n🔍 NOTION FETCH DEBUG ${isRetry ? `(Retry ${attempt - 1}/${maxRetries})` : ''} - ${new Date(fetchTimestamp).toISOString()}`);
       console.log(`📊 Database ID: ${databaseId}`);
@@ -39,6 +40,12 @@ export class NotionSyncClient {
       }
     
     try {
+      // Network timing instrumentation (using Date.now() since performance.now() not available in Convex)
+      requestStartTime = Date.now();
+      const requestTimestamp = new Date().toISOString();
+      
+      console.log(`🌐 NETWORK REQUEST START: ${requestTimestamp}`);
+      
       const response = await this.notion.databases.query({
         database_id: databaseId,
         filter: lastSync ? {
@@ -54,6 +61,27 @@ export class NotionSyncClient {
           },
         ],
       });
+
+      // Calculate and log network timing
+      const requestEndTime = Date.now();
+      const responseTimestamp = new Date().toISOString();
+      const networkLatency = requestEndTime - requestStartTime;
+      
+      console.log(`🌐 NETWORK TIMING ANALYSIS:`);
+      console.log(`   📡 Request start: ${requestTimestamp}`);
+      console.log(`   📥 Response received: ${responseTimestamp}`);
+      console.log(`   ⏱️ Total network latency: ${networkLatency.toFixed(2)}ms`);
+      console.log(`   📊 Records returned: ${response.results.length}`);
+      console.log(`   📈 Latency per record: ${response.results.length > 0 ? (networkLatency / response.results.length).toFixed(2) : 'N/A'}ms`);
+      
+      // Categorize latency performance
+      let performanceCategory = '';
+      if (networkLatency < 500) performanceCategory = '🟢 EXCELLENT';
+      else if (networkLatency < 1000) performanceCategory = '🟡 GOOD';
+      else if (networkLatency < 2000) performanceCategory = '🟠 MODERATE';
+      else performanceCategory = '🔴 SLOW';
+      
+      console.log(`   🎯 Performance rating: ${performanceCategory}`);
 
         console.log(`📦 Notion returned ${response.results.length} records`);
         
@@ -109,7 +137,12 @@ export class NotionSyncClient {
         
         return transformedRecords;
       } catch (error) {
-        console.error(`Error fetching from Notion (attempt ${attempt}):`, error);
+        const errorTime = Date.now();
+        const timeToError = errorTime - (requestStartTime || fetchTimestamp);
+        
+        console.error(`❌ NETWORK ERROR (attempt ${attempt}):`, error);
+        console.log(`⏱️ Time to error: ${timeToError.toFixed(2)}ms`);
+        console.log(`🕐 Error timestamp: ${new Date().toISOString()}`);
         
         // If this is the last attempt, throw the error
         if (attempt === maxRetries + 1) {
