@@ -22,13 +22,8 @@ export const syncNotionDatabase = action({
       
       // Initialize Notion client and fetch changes
       const client = new NotionSyncClient(notionApiKey);
-      // TESTING: Always use full sync to eliminate incremental sync issues
-      // Use retry mechanism to handle Notion propagation delays
-      const changes = await client.fetchDatabaseChanges(
-        databaseId, 
-        undefined,  // Always full sync - no lastSyncTime filter
-        { maxRetries: 2, retryDelay: 5000 } // Retry up to 2 times with 5s delays
-      );
+      // Simple fetch: Just get all data like the working raw API
+      const changes = await client.fetchDatabaseChanges(databaseId);
       
       console.log(`Found ${changes.length} changes from Notion`);
 

@@ -20,171 +20,178 @@ export class NotionSyncClient {
     this.apiKey = apiKey;
   }
 
-  // Read-only: Fetch changes from Notion for caching in Convex
+  // EXACT COPY of working raw API
   async fetchDatabaseChanges(
     databaseId: string, 
     lastSync?: number,
     options?: { maxRetries?: number; retryDelay?: number }
   ): Promise<NotionRecord[]> {
-    const { maxRetries = 2, retryDelay = 5000 } = options || {};
-    
-    for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
-      const isRetry = attempt > 1;
-      const fetchTimestamp = Date.now();
-      let requestStartTime = 0; // Initialize timing variable
-      
-      console.log(`\n🔍 NOTION FETCH DEBUG ${isRetry ? `(Retry ${attempt - 1}/${maxRetries})` : ''} - ${new Date(fetchTimestamp).toISOString()}`);
-      console.log(`📊 Database ID: ${databaseId}`);
-      console.log(`⏰ Last sync filter: ${lastSync ? new Date(lastSync).toISOString() : 'FULL SYNC (no filter)'}`);  
-      
-      if (isRetry) {
-        console.log(`🔄 Retrying due to potential stale data detection...`);
-      }
+    console.log("🔍 NOTION FETCH: Using EXACT raw API logic...");
     
     try {
-      // Network timing instrumentation (using Date.now() since performance.now() not available in Convex)
-      requestStartTime = Date.now();
-      const requestTimestamp = new Date().toISOString();
-      
-      console.log(`🌐 NETWORK REQUEST START: ${requestTimestamp}`);
-      
-      // Use direct fetch to capture cache headers instead of Notion SDK
-      const fetchResponse = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+      const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
           'Notion-Version': '2022-06-28',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          filter: lastSync ? {
-            timestamp: "last_edited_time",
-            last_edited_time: {
-              after: new Date(lastSync).toISOString(),
-            },
-          } : undefined,
           sorts: [
             {
-              timestamp: "last_edited_time",
-              direction: "descending",
-            },
-          ],
+              timestamp: 'last_edited_time',
+              direction: 'descending'
+            }
+          ]
         })
       });
 
-      // Calculate and log network timing
-      const requestEndTime = Date.now();
-      const responseTimestamp = new Date().toISOString();
-      const networkLatency = requestEndTime - requestStartTime;
-      
-      // 🗂️ CACHE HEADERS ANALYSIS
-      console.log(`\n🗂️ CACHE HEADERS ANALYSIS:`);
-      console.log(`   Cache-Control: ${fetchResponse.headers.get('cache-control') || 'none'}`);
-      console.log(`   ETag: ${fetchResponse.headers.get('etag') || 'none'}`);
-      console.log(`   Last-Modified: ${fetchResponse.headers.get('last-modified') || 'none'}`);
-      console.log(`   Age: ${fetchResponse.headers.get('age') || 'none'}`);
-      console.log(`   X-Cache: ${fetchResponse.headers.get('x-cache') || 'none'}`);
-      console.log(`   X-Cache-Status: ${fetchResponse.headers.get('x-cache-status') || 'none'}`);
-      console.log(`   Expires: ${fetchResponse.headers.get('expires') || 'none'}`);
-      console.log(`   Pragma: ${fetchResponse.headers.get('pragma') || 'none'}`);
-      console.log(`   Vary: ${fetchResponse.headers.get('vary') || 'none'}`);
-      
-      if (!fetchResponse.ok) {
-        throw new Error(`Notion API error: ${fetchResponse.status} ${fetchResponse.statusText}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Notion API Error: ${response.status} ${response.statusText} - ${errorText}`);
       }
-      
-      const response = await fetchResponse.json();
-      
-      console.log(`🌐 NETWORK TIMING ANALYSIS:`);
-      console.log(`   📡 Request start: ${requestTimestamp}`);
-      console.log(`   📥 Response received: ${responseTimestamp}`);
-      console.log(`   ⏱️ Total network latency: ${networkLatency.toFixed(2)}ms`);
-      console.log(`   📊 Records returned: ${response.results.length}`);
-      console.log(`   📈 Latency per record: ${response.results.length > 0 ? (networkLatency / response.results.length).toFixed(2) : 'N/A'}ms`);
-      
-      // Categorize latency performance
-      let performanceCategory = '';
-      if (networkLatency < 500) performanceCategory = '🟢 EXCELLENT';
-      else if (networkLatency < 1000) performanceCategory = '🟡 GOOD';
-      else if (networkLatency < 2000) performanceCategory = '🟠 MODERATE';
-      else performanceCategory = '🔴 SLOW';
-      
-      console.log(`   🎯 Performance rating: ${performanceCategory}`);
 
-        console.log(`📦 Notion returned ${response.results.length} records`);
-        
-        let suspiciousRecords = 0;
-        let recentlyEditedRecords = 0;
-        
-        // Log detailed info for each record to detect stale data
-        const transformedRecords = response.results.map((page: any, index: number) => {
-          const lastEditedTime = new Date(page.last_edited_time).getTime();
-          const timeSinceEdit = fetchTimestamp - lastEditedTime;
-          const assigneeValue = page.properties['t[K\\\\']?.select?.name || null;
-          
-          console.log(`\n  Record ${index + 1}/${response.results.length}:`);
-          console.log(`    📝 Title: ${this.extractTitle(page.properties)}`);
-          console.log(`    🕐 Last edited: ${new Date(lastEditedTime).toISOString()}`);
-          console.log(`    ⏱️ Time since edit: ${Math.round(timeSinceEdit / 1000)}s ago`);
-          console.log(`    👤 Assignee value: "${assigneeValue}"`);
-          
-          // Flag potentially stale data (edited within last 30 seconds)
-          if (timeSinceEdit < 30000) {
-            recentlyEditedRecords++;
-            console.log(`    ⚠️ WARNING: Recently edited (${Math.round(timeSinceEdit / 1000)}s ago) - data might be stale!`);
-            
-            // Additional heuristic: if edit is very recent but field seems empty/default
-            if (timeSinceEdit < 10000 && (!assigneeValue || assigneeValue === 'Developer 1')) {
-              suspiciousRecords++;
-              console.log(`    🚨 HIGHLY SUSPICIOUS: Very recent edit with default/empty assignee!`);
-            }
-          }
-          
-          return this.transformNotionPage(page);
-        });
-        
-        // Decide whether to retry based on suspicious data patterns
-        const shouldRetry = (
-          attempt <= maxRetries && 
-          recentlyEditedRecords > 0 && 
-          (suspiciousRecords > 0 || recentlyEditedRecords >= response.results.length * 0.3)
-        );
-        
-        if (shouldRetry) {
-          console.log(`\n🔄 STALE DATA DETECTED: ${suspiciousRecords} suspicious records, ${recentlyEditedRecords} recently edited`);
-          console.log(`⏳ Waiting ${retryDelay / 1000}s before retry...`);
-          await new Promise(resolve => setTimeout(resolve, retryDelay));
-          continue; // Retry the fetch
-        }
-        
-        console.log(`✅ Fetch completed at ${new Date().toISOString()}`);
-        if (isRetry) {
-          console.log(`🎉 Retry successful - data appears fresh!`);
-        }
-        console.log(`📈 Stats: ${recentlyEditedRecords} recently edited, ${suspiciousRecords} suspicious\n`);
-        
-        return transformedRecords;
-      } catch (error) {
-        const errorTime = Date.now();
-        const timeToError = errorTime - (requestStartTime || fetchTimestamp);
-        
-        console.error(`❌ NETWORK ERROR (attempt ${attempt}):`, error);
-        console.log(`⏱️ Time to error: ${timeToError.toFixed(2)}ms`);
-        console.log(`🕐 Error timestamp: ${new Date().toISOString()}`);
-        
-        // If this is the last attempt, throw the error
-        if (attempt === maxRetries + 1) {
-          throw new Error(`Notion API error: ${error instanceof Error ? error.message : String(error)}`);
-        }
-        
-        // Otherwise, wait and retry
-        console.log(`⏳ Waiting ${retryDelay / 1000}s before retry due to error...`);
-        await new Promise(resolve => setTimeout(resolve, retryDelay));
-      }
+      const data = await response.json();
+      console.log(`📦 Notion returned ${data.results.length} records`);
+      
+      // Use EXACT same transformation as raw API
+      return data.results.map((page: any) => ({
+        id: page.id,
+        title: this.extractTitleSimple(page.properties),
+        properties: {
+          week: this.extractWeek(page.properties) ?? undefined,
+          phase: this.extractPhase(page.properties) ?? undefined,
+          status: this.extractStatusSimple(page.properties) ?? undefined,
+          priority: this.extractPriority(page.properties) ?? undefined,
+          assignee: this.extractAssigneeSimple(page.properties) ?? undefined,
+          category: this.extractCategory(page.properties),
+          description: this.extractDescription(page.properties) ?? undefined,
+          successCriteria: this.extractSuccessCriteria(page.properties) ?? undefined,
+          dependencies: this.extractDependencies(page.properties) ?? undefined,
+          risks: this.extractRisks(page.properties) ?? undefined,
+          dueDate: this.extractDueDate(page.properties) ?? undefined,
+        },
+        createdTime: new Date(page.created_time).getTime(),
+        lastModified: new Date(page.last_edited_time).getTime(),
+        url: page.url,
+      }));
+      
+    } catch (error) {
+      console.error("❌ NOTION FETCH ERROR:", error);
+      throw new Error(`Raw Notion API failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-    
-    // This should never be reached, but just in case
-    throw new Error('Unexpected end of retry loop');
+  }
+
+  // Simple extraction methods - identical to raw API
+  private extractTitleSimple(properties: any): string {
+    try {
+      const titleProp = properties['Task Name'] || properties.title;
+      if (titleProp?.title?.[0]?.plain_text) {
+        return titleProp.title[0].plain_text;
+      }
+      return 'Untitled';
+    } catch {
+      return 'Untitled';
+    }
+  }
+
+  private extractAssigneeSimple(properties: any): string | null {
+    try {
+      const assigneeProp = properties['t[K\\'] || properties.Assignee;
+      return assigneeProp?.select?.name || null;
+    } catch {
+      return null;
+    }
+  }
+
+  private extractStatusSimple(properties: any): string | null {
+    try {
+      const statusProp = properties['Z[au'] || properties.Status;
+      return statusProp?.select?.name || null;
+    } catch {
+      return null;
+    }
+  }
+
+  private extractWeek(properties: any): number | null {
+    try {
+      const weekProp = properties['FsRO'];
+      return weekProp?.number || null;
+    } catch {
+      return null;
+    }
+  }
+
+  private extractPhase(properties: any): string | null {
+    try {
+      const phaseProp = properties['ZyVe'];
+      return phaseProp?.select?.name || null;
+    } catch {
+      return null;
+    }
+  }
+
+  private extractPriority(properties: any): string | null {
+    try {
+      const priorityProp = properties['WpFO'];
+      return priorityProp?.select?.name || null;
+    } catch {
+      return null;
+    }
+  }
+
+  private extractCategory(properties: any): string[] {
+    try {
+      const categoryProp = properties['}WSF'];
+      return categoryProp?.multi_select?.map((item: any) => item.name) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  private extractDescription(properties: any): string | null {
+    try {
+      const descProp = properties['=HYC'];
+      return descProp?.rich_text?.map((rt: any) => rt.plain_text).join('') || null;
+    } catch {
+      return null;
+    }
+  }
+
+  private extractSuccessCriteria(properties: any): string | null {
+    try {
+      const criteriaProp = properties['=GGp'];
+      return criteriaProp?.rich_text?.map((rt: any) => rt.plain_text).join('') || null;
+    } catch {
+      return null;
+    }
+  }
+
+  private extractDependencies(properties: any): string | null {
+    try {
+      const depProp = properties['kDm\\'];
+      return depProp?.rich_text?.map((rt: any) => rt.plain_text).join('') || null;
+    } catch {
+      return null;
+    }
+  }
+
+  private extractRisks(properties: any): string | null {
+    try {
+      const riskProp = properties['V>|B'];
+      return riskProp?.rich_text?.map((rt: any) => rt.plain_text).join('') || null;
+    } catch {
+      return null;
+    }
+  }
+
+  private extractDueDate(properties: any): string | null {
+    try {
+      const dueProp = properties['oY^i'];
+      return dueProp?.date?.start || null;
+    } catch {
+      return null;
+    }
   }
 
   private transformNotionPage(notionPage: any): NotionRecord {
