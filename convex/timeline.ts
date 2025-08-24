@@ -2,13 +2,13 @@ import { v } from "convex/values";
 import { action, query, ActionCtx, QueryCtx } from "./_generated/server";
 import { api } from "./_generated/api";
 
-// Demo action to manually trigger sync (DO NOT RUN until env vars are set)
+// Triggers manual synchronization of Notion database with timeline data
 export const triggerNotionSync = action({
   args: { 
     forceFullSync: v.optional(v.boolean())
   },
   handler: async (ctx: ActionCtx, { forceFullSync = false }): Promise<{ success: boolean; synced: number }> => {
-    const databaseId = "2584f2e11dba819eb0f5fc54bff7b13f"; // Your project timeline database
+    const databaseId = "2584f2e11dba819eb0f5fc54bff7b13f"; // Project timeline database ID
     
     try {
       const result: any = await ctx.runAction(api.notion.sync.syncNotionDatabase, {
@@ -16,16 +16,16 @@ export const triggerNotionSync = action({
         forceFullSync
       });
       
-      console.log("Manual sync completed:", result);
+      console.log("Timeline sync completed:", result);
       return result;
     } catch (error) {
-      console.error("Manual sync failed:", error);
+      console.error("Timeline sync failed:", error);
       throw error;
     }
   }
 });
 
-// Demo query to get project timeline for frontend (safe to use after sync)
+// Retrieves filtered project timeline data from Notion integration
 export const getProjectTimeline = query({
   args: {
     phase: v.optional(v.string()),
@@ -46,7 +46,7 @@ export const getProjectTimeline = query({
   }
 });
 
-// Demo query to get current sync status (safe to check anytime)
+// Returns current synchronization status and metadata
 export const getSyncStatus = query({
   handler: async (ctx: QueryCtx): Promise<any> => {
     const databaseId = "2584f2e11dba819eb0f5fc54bff7b13f";
