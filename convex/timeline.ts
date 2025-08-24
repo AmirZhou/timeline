@@ -56,3 +56,18 @@ export const getSyncStatus = query({
     });
   }
 });
+
+// TEST ACTION: Test Notion propagation delay to diagnose timing issues
+export const testPropagationDelay = action({
+  args: {
+    delayIntervals: v.optional(v.array(v.number()))
+  },
+  handler: async (ctx: ActionCtx, { delayIntervals }): Promise<any> => {
+    const databaseId = "2584f2e11dba819eb0f5fc54bff7b13f";
+    
+    return await ctx.runAction(api.notion.sync.testNotionPropagationDelay, {
+      databaseId,
+      delayIntervals
+    });
+  }
+});

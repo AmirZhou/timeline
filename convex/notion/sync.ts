@@ -22,9 +22,12 @@ export const syncNotionDatabase = action({
       
       // Initialize Notion client and fetch changes
       const client = new NotionSyncClient(notionApiKey);
+      // TESTING: Always use full sync to eliminate incremental sync issues
+      // Use retry mechanism to handle Notion propagation delays
       const changes = await client.fetchDatabaseChanges(
         databaseId, 
-        forceFullSync ? undefined : lastSync?.lastSyncTime
+        undefined,  // Always full sync - no lastSyncTime filter
+        { maxRetries: 2, retryDelay: 5000 } // Retry up to 2 times with 5s delays
       );
       
       console.log(`Found ${changes.length} changes from Notion`);
@@ -257,4 +260,101 @@ export const getSyncStatus = query({
       errorMessage: meta.errorMessage,
     };
   },
+});
+
+// TEST ACTION: Verify Notion propagation delay with multiple fetches
+export const testNotionPropagationDelay = action({
+  args: { 
+    databaseId: v.string(),
+    delayIntervals: v.optional(v.array(v.number())) // Array of delay intervals in seconds
+  },
+  handler: async (ctx, { databaseId, delayIntervals = [1, 5, 10, 20, 30] }) => {
+    console.log(`\n🧪 TESTING NOTION PROPAGATION DELAY`);
+    console.log(`📊 Database ID: ${databaseId}`);
+    console.log(`⏱️ Test intervals: ${delayIntervals.map(d => `${d}s`).join(', ')}`);
+    
+    const notionApiKey = process.env.NOTION_API_KEY;
+    if (!notionApiKey) {
+      throw new Error("NOTION_API_KEY not configured");
+    }
+    
+    const client = new NotionSyncClient(notionApiKey);
+    const testResults: Array<{
+      delay: number;
+      timestamp: string;
+      recordCount: number;
+      records: Array<{
+        title: string;
+        lastEditedTime: string;
+        assignee: string | null;
+        status: string | null;
+      }>;
+    }> = [];
+    
+    // Perform initial fetch to establish baseline
+    console.log(`\n🔄 Baseline fetch (0s delay):`);
+    const baselineRecords = await client.fetchDatabaseChanges(databaseId);
+    
+    testResults.push({
+      delay: 0,
+      timestamp: new Date().toISOString(),
+      recordCount: baselineRecords.length,
+      records: baselineRecords.slice(0, 5).map(record => ({
+        title: record.title,
+        lastEditedTime: new Date(record.lastModified).toISOString(),
+        assignee: record.properties.assignee,
+        status: record.properties.status,
+      }))
+    });
+    
+    // Perform delayed fetches
+    for (const delaySeconds of delayIntervals) {
+      console.log(`\n⏳ Waiting ${delaySeconds} seconds before next fetch...`);
+      await new Promise(resolve => setTimeout(resolve, delaySeconds * 1000));
+      
+      console.log(`\n🔄 Fetch after ${delaySeconds}s delay:`);
+      const delayedRecords = await client.fetchDatabaseChanges(databaseId);
+      
+      testResults.push({
+        delay: delaySeconds,
+        timestamp: new Date().toISOString(),
+        recordCount: delayedRecords.length,
+        records: delayedRecords.slice(0, 5).map(record => ({
+          title: record.title,
+          lastEditedTime: new Date(record.lastModified).toISOString(),
+          assignee: record.properties.assignee,
+          status: record.properties.status,
+        }))
+      });
+      
+      // Compare with baseline to detect changes
+      const baselineFirst = testResults[0].records[0];
+      const currentFirst = delayedRecords[0];
+      
+      if (baselineFirst && currentFirst) {
+        const assigneeChanged = baselineFirst.assignee !== currentFirst.properties.assignee;
+        const lastEditedChanged = baselineFirst.lastEditedTime !== new Date(currentFirst.lastModified).toISOString();
+        
+        console.log(`  📊 Comparison with baseline:`);
+        console.log(`    - Assignee changed: ${assigneeChanged ? '✅ YES' : '❌ NO'}`);
+        console.log(`    - Last edited time changed: ${lastEditedChanged ? '✅ YES' : '❌ NO'}`);
+        
+        if (lastEditedChanged && !assigneeChanged) {
+          console.log(`    ⚠️  STALE DATA DETECTED: last_edited_time updated but assignee value didn't change!`);
+        }
+      }
+    }
+    
+    console.log(`\n📋 TEST RESULTS SUMMARY:`);
+    testResults.forEach((result, index) => {
+      console.log(`  ${index === 0 ? 'Baseline' : `${result.delay}s delay`}: ${result.recordCount} records, first assignee: "${result.records[0]?.assignee || 'none'}"`);
+    });
+    
+    return {
+      testCompleted: true,
+      totalTests: testResults.length,
+      results: testResults,
+      summary: `Tested ${delayIntervals.length + 1} intervals, found ${testResults.length} data points`
+    };
+  }
 });

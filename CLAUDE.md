@@ -17,6 +17,133 @@ This file provides a comprehensive overview of the codebase structure, React com
 
 ---
 
+## Notion Database Structure
+
+**Database Name**: "Access Alberta Legal - 4 Month Development Timeline"  
+**Database ID**: `2584f2e11dba819eb0f5fc54bff7b13f`  
+**Icon**: 🏅  
+
+### Property Schema
+
+#### **Task Name** (`title`)
+- **Type**: `title`
+- **Description**: Primary task identifier and description
+- **Required**: Yes (title field)
+
+#### **Status** (`Z[au`)
+- **Type**: `select`
+- **Options**:
+  - `Not Started` (gray)
+  - `In Progress` (yellow) 
+  - `In Review` (orange)
+  - `Completed` (green)
+  - `Blocked` (red)
+
+#### **Priority** (`WpFO`)
+- **Type**: `select`
+- **Options**:
+  - `Critical` (red)
+  - `High` (orange)
+  - `Medium` (yellow)
+  - `Low` (gray)
+
+#### **Phase** (`ZyVe`)
+- **Type**: `select`
+- **Options**:
+  - `Phase 1: Foundation & Legal Framework` (blue)
+  - `Phase 2: Core Development & Demo Preparation` (green)
+  - `Phase 3: Advanced Features & User Testing` (orange)
+  - `Phase 4: Polish & Market Package` (purple)
+
+#### **Assignee** (`t[K\`)
+- **Type**: `select`
+- **Options**:
+  - `Developer 1` (blue)
+  - `Developer 2` (green)
+  - `Both Developers` (orange)
+  - `External` (gray)
+
+#### **Category** (`}WSF`)
+- **Type**: `multi_select`
+- **Options**:
+  - `Technical Development` (blue)
+  - `Legal Compliance` (red)
+  - `Business Development` (green)
+  - `Personal Skills` (purple)
+  - `Acquisition Prep` (pink)
+  - `Demo/Testing` (orange)
+
+#### **Week** (`FsRO`)
+- **Type**: `number`
+- **Format**: `number`
+- **Description**: Target week number for task completion
+
+#### **Due Date** (`oY^i`)
+- **Type**: `date`
+- **Description**: Specific deadline for task completion
+
+#### **Description** (`=HYC`)
+- **Type**: `rich_text`
+- **Description**: Detailed task description and requirements
+
+#### **Success Criteria** (`=GGp`)
+- **Type**: `rich_text`
+- **Description**: Definition of done and success metrics
+
+#### **Dependencies** (`kDm\`)
+- **Type**: `rich_text`
+- **Description**: Prerequisites and blocking tasks
+
+#### **Risks** (`V>|B`)
+- **Type**: `rich_text`
+- **Description**: Potential issues and mitigation strategies
+
+### Sample Record Structure
+```json
+{
+  "id": "2584f2e1-1dba-81d9-bbeb-d0c801e86f1f",
+  "created_time": "2025-08-23T20:22:00.000Z",
+  "last_edited_time": "2025-08-24T19:28:00.000Z",
+  "properties": {
+    "Task Name": {
+      "type": "title",
+      "title": [{"plain_text": "Setup: Project Foundation & Legal Research"}]
+    },
+    "Status": {
+      "type": "select", 
+      "select": {"name": "In Progress", "color": "yellow"}
+    },
+    "Priority": {
+      "type": "select",
+      "select": {"name": "Medium", "color": "yellow"}
+    },
+    "Phase": {
+      "type": "select", 
+      "select": {"name": "Phase 1: Foundation & Legal Framework", "color": "blue"}
+    },
+    "Assignee": {
+      "type": "select",
+      "select": {"name": "Developer 1", "color": "blue"}
+    },
+    "Category": {
+      "type": "multi_select",
+      "multi_select": [
+        {"name": "Legal Compliance", "color": "red"},
+        {"name": "Business Development", "color": "green"}
+      ]
+    },
+    "Week": {"type": "number", "number": 1},
+    "Due Date": {"type": "date", "date": {"start": "2025-09-08"}},
+    "Description": {
+      "type": "rich_text",
+      "rich_text": [{"plain_text": "LIGHT WEEK - Classes starting..."}]
+    }
+  }
+}
+```
+
+---
+
 ## React Components
 
 ### Main Application Components
@@ -133,6 +260,10 @@ Status bar displaying sync information, last sync time, record count, and manual
 
 #### **FailSafeIndicator.tsx** - `FailSafeIndicator(): React.JSX.Element`
 Warning indicator displaying "FAIL-SAFE ACTIVE" with warning icon and semi-transparent styling.
+
+#### **NotionPropagationWarning.tsx** - `NotionPropagationWarning(props: NotionPropagationWarningProps): React.JSX.Element | null`
+Warning component for Notion data propagation delays with dismissible yellow alert styling.
+Key props: isVisible (boolean), onDismiss (() => void, optional).
 
 ### Visual Components
 

@@ -21,8 +21,23 @@ export class NotionSyncClient {
   // Read-only: Fetch changes from Notion for caching in Convex
   async fetchDatabaseChanges(
     databaseId: string, 
-    lastSync?: number
+    lastSync?: number,
+    options?: { maxRetries?: number; retryDelay?: number }
   ): Promise<NotionRecord[]> {
+    const { maxRetries = 2, retryDelay = 5000 } = options || {};
+    
+    for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
+      const isRetry = attempt > 1;
+      const fetchTimestamp = Date.now();
+      
+      console.log(`\n🔍 NOTION FETCH DEBUG ${isRetry ? `(Retry ${attempt - 1}/${maxRetries})` : ''} - ${new Date(fetchTimestamp).toISOString()}`);
+      console.log(`📊 Database ID: ${databaseId}`);
+      console.log(`⏰ Last sync filter: ${lastSync ? new Date(lastSync).toISOString() : 'FULL SYNC (no filter)'}`);  
+      
+      if (isRetry) {
+        console.log(`🔄 Retrying due to potential stale data detection...`);
+      }
+    
     try {
       const response = await this.notion.databases.query({
         database_id: databaseId,
@@ -40,15 +55,87 @@ export class NotionSyncClient {
         ],
       });
 
-      return response.results.map((page: any) => this.transformNotionPage(page));
-    } catch (error) {
-      console.error("Error fetching from Notion:", error);
-      throw new Error(`Notion API error: ${error instanceof Error ? error.message : String(error)}`);
+        console.log(`📦 Notion returned ${response.results.length} records`);
+        
+        let suspiciousRecords = 0;
+        let recentlyEditedRecords = 0;
+        
+        // Log detailed info for each record to detect stale data
+        const transformedRecords = response.results.map((page: any, index: number) => {
+          const lastEditedTime = new Date(page.last_edited_time).getTime();
+          const timeSinceEdit = fetchTimestamp - lastEditedTime;
+          const assigneeValue = page.properties['t[K\\\\']?.select?.name || null;
+          
+          console.log(`\n  Record ${index + 1}/${response.results.length}:`);
+          console.log(`    📝 Title: ${this.extractTitle(page.properties)}`);
+          console.log(`    🕐 Last edited: ${new Date(lastEditedTime).toISOString()}`);
+          console.log(`    ⏱️ Time since edit: ${Math.round(timeSinceEdit / 1000)}s ago`);
+          console.log(`    👤 Assignee value: "${assigneeValue}"`);
+          
+          // Flag potentially stale data (edited within last 30 seconds)
+          if (timeSinceEdit < 30000) {
+            recentlyEditedRecords++;
+            console.log(`    ⚠️ WARNING: Recently edited (${Math.round(timeSinceEdit / 1000)}s ago) - data might be stale!`);
+            
+            // Additional heuristic: if edit is very recent but field seems empty/default
+            if (timeSinceEdit < 10000 && (!assigneeValue || assigneeValue === 'Developer 1')) {
+              suspiciousRecords++;
+              console.log(`    🚨 HIGHLY SUSPICIOUS: Very recent edit with default/empty assignee!`);
+            }
+          }
+          
+          return this.transformNotionPage(page);
+        });
+        
+        // Decide whether to retry based on suspicious data patterns
+        const shouldRetry = (
+          attempt <= maxRetries && 
+          recentlyEditedRecords > 0 && 
+          (suspiciousRecords > 0 || recentlyEditedRecords >= response.results.length * 0.3)
+        );
+        
+        if (shouldRetry) {
+          console.log(`\n🔄 STALE DATA DETECTED: ${suspiciousRecords} suspicious records, ${recentlyEditedRecords} recently edited`);
+          console.log(`⏳ Waiting ${retryDelay / 1000}s before retry...`);
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          continue; // Retry the fetch
+        }
+        
+        console.log(`✅ Fetch completed at ${new Date().toISOString()}`);
+        if (isRetry) {
+          console.log(`🎉 Retry successful - data appears fresh!`);
+        }
+        console.log(`📈 Stats: ${recentlyEditedRecords} recently edited, ${suspiciousRecords} suspicious\n`);
+        
+        return transformedRecords;
+      } catch (error) {
+        console.error(`Error fetching from Notion (attempt ${attempt}):`, error);
+        
+        // If this is the last attempt, throw the error
+        if (attempt === maxRetries + 1) {
+          throw new Error(`Notion API error: ${error instanceof Error ? error.message : String(error)}`);
+        }
+        
+        // Otherwise, wait and retry
+        console.log(`⏳ Waiting ${retryDelay / 1000}s before retry due to error...`);
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+      }
     }
+    
+    // This should never be reached, but just in case
+    throw new Error('Unexpected end of retry loop');
   }
 
   private transformNotionPage(notionPage: any): NotionRecord {
     const properties = this.transformProperties(notionPage.properties);
+    const lastModified = new Date(notionPage.last_edited_time).getTime();
+    
+    // Enhanced logging for assignee field specifically
+    const rawAssignee = notionPage.properties['t[K\\'];
+    if (rawAssignee) {
+      console.log(`    🔎 Raw Assignee Property:`, JSON.stringify(rawAssignee, null, 2));
+      console.log(`    🔄 Transformed Assignee: "${properties.assignee}"`);
+    }
     
     return {
       id: notionPage.id,
@@ -67,7 +154,7 @@ export class NotionSyncClient {
         dueDate: properties.dueDate,
       },
       createdTime: new Date(notionPage.created_time).getTime(),
-      lastModified: new Date(notionPage.last_edited_time).getTime(),
+      lastModified: lastModified,
       url: notionPage.url,
     };
   }
@@ -82,7 +169,14 @@ export class NotionSyncClient {
 
     for (const [key, value] of Object.entries(properties)) {
       const camelKey = this.camelCase(key);
-      transformed[camelKey] = this.extractPropertyValue(value);
+      const extractedValue = this.extractPropertyValue(value);
+      
+      // Debug logging for property extraction
+      if (key.toLowerCase().includes('assign')) {
+        console.log(`🔍 Extracting property "${key}" (${(value as any).type}):`, extractedValue);
+      }
+      
+      transformed[camelKey] = extractedValue;
     }
 
     return transformed;
@@ -104,6 +198,55 @@ export class NotionSyncClient {
         return property.date?.start || null;
       case 'checkbox':
         return property.checkbox;
+      case 'people':
+        // Handle people/assignee fields - extract names
+        return property.people?.map((person: any) => person.name || person.id).join(', ') || null;
+      case 'email':
+        return property.email;
+      case 'phone_number':
+        return property.phone_number;
+      case 'url':
+        return property.url;
+      case 'relation':
+        // Handle relation fields - extract IDs or titles
+        return property.relation?.map((rel: any) => rel.id) || [];
+      case 'formula':
+        // Handle formula fields based on their result type
+        return this.extractFormulaValue(property.formula);
+      case 'rollup':
+        // Handle rollup fields based on their result type
+        return this.extractRollupValue(property.rollup);
+      default:
+        console.warn(`Unhandled Notion property type: ${property.type}`, property);
+        return null;
+    }
+  }
+
+  private extractFormulaValue(formula: any): any {
+    if (!formula) return null;
+    switch (formula.type) {
+      case 'string':
+        return formula.string;
+      case 'number':
+        return formula.number;
+      case 'boolean':
+        return formula.boolean;
+      case 'date':
+        return formula.date?.start || null;
+      default:
+        return null;
+    }
+  }
+
+  private extractRollupValue(rollup: any): any {
+    if (!rollup) return null;
+    switch (rollup.type) {
+      case 'array':
+        return rollup.array?.map((item: any) => this.extractPropertyValue(item)) || [];
+      case 'number':
+        return rollup.number;
+      case 'date':
+        return rollup.date?.start || null;
       default:
         return null;
     }
