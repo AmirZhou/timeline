@@ -1,10 +1,10 @@
 import React from 'react';
 
-interface StageRowProps {
+interface PhaseRowProps {
   children: React.ReactNode;
 }
 
-export const StageRow: React.FC<StageRowProps> = ({ children }) => {
+export const PhaseRow: React.FC<PhaseRowProps> = ({ children }) => {
   return (
     <div 
       style={{ 

@@ -1,14 +1,14 @@
 import React from 'react';
 import { useTheme } from '../providers/ThemeProvider';
 
-interface SubstepTextProps {
-  content: string;
+interface TaskNumberProps {
+  value: string;
   isActive?: boolean;
   isComplete?: boolean;
 }
 
-export const SubstepText: React.FC<SubstepTextProps> = ({ 
-  content, 
+export const TaskNumber: React.FC<TaskNumberProps> = ({ 
+  value, 
   isActive = false, 
   isComplete = false 
 }) => {
@@ -16,7 +16,7 @@ export const SubstepText: React.FC<SubstepTextProps> = ({
   
   const getColor = () => {
     if (isComplete) return theme.success;
-    if (isActive) return theme.text;
+    if (isActive) return theme.accent;
     return theme.textSecondary;
   };
   
@@ -24,11 +24,14 @@ export const SubstepText: React.FC<SubstepTextProps> = ({
     <span 
       style={{ 
         color: getColor(),
-        fontSize: '0.85rem',
-        textDecoration: isComplete ? 'line-through' : 'none',
+        fontSize: '0.8rem',
+        fontWeight: 'bold',
+        marginRight: '0.5rem',
+        minWidth: '2rem',
+        display: 'inline-block',
       }}
     >
-      {content}
+      {value}
     </span>
   );
 };

@@ -1,14 +1,14 @@
 import React from 'react';
 import { useTheme } from '../providers/ThemeProvider';
 
-interface StageLabelProps {
-  text: string;
+interface TaskTextProps {
+  content: string;
   isActive?: boolean;
   isComplete?: boolean;
 }
 
-export const StageLabel: React.FC<StageLabelProps> = ({ 
-  text, 
+export const TaskText: React.FC<TaskTextProps> = ({ 
+  content, 
   isActive = false, 
   isComplete = false 
 }) => {
@@ -16,21 +16,19 @@ export const StageLabel: React.FC<StageLabelProps> = ({
   
   const getColor = () => {
     if (isComplete) return theme.success;
-    if (isActive) return theme.accent;
+    if (isActive) return theme.text;
     return theme.textSecondary;
   };
   
   return (
-    <div 
+    <span 
       style={{ 
         color: getColor(),
-        fontSize: '0.9rem',
-        textAlign: 'center',
-        marginTop: '0.5rem',
-        fontWeight: isActive ? 'bold' : 'normal',
+        fontSize: '0.85rem',
+        textDecoration: isComplete ? 'line-through' : 'none',
       }}
     >
-      {text}
-    </div>
+      {content}
+    </span>
   );
 };

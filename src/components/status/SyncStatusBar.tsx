@@ -1,8 +1,8 @@
 import React from 'react';
-import { useFlowState } from '../providers/FlowStateProvider';
+import { useTimelineState } from '../providers/TimelineStateProvider';
 
 export const SyncStatusBar: React.FC = () => {
-  const { syncStatus, triggerSync } = useFlowState();
+  const { syncStatus, triggerSync } = useTimelineState();
 
   if (!syncStatus) return null;
 

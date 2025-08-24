@@ -1,15 +1,15 @@
 import React from 'react';
 import { ThemeProvider } from './providers/ThemeProvider';
-import { FlowStateProvider } from './providers/FlowStateProvider';
-import { FlowContainer } from './layout/FlowContainer';
-import { HorizontalFlowLayout } from './layout/HorizontalFlowLayout';
+import { TimelineStateProvider } from './providers/TimelineStateProvider';
+import { TimelineContainer } from './layout/TimelineContainer';
+import { HorizontalTimelineLayout } from './layout/HorizontalTimelineLayout';
 import { HeaderTitle } from './display/HeaderTitle';
 import { HeaderSubtitle } from './display/HeaderSubtitle';
 import { SyncStatusBar } from './status/SyncStatusBar';
 
-const FlowContent: React.FC = () => {
+const TimelineContent: React.FC = () => {
   return (
-    <FlowContainer>
+    <TimelineContainer>
       <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
         <HeaderTitle />
         <HeaderSubtitle />
@@ -17,17 +17,17 @@ const FlowContent: React.FC = () => {
       
       <SyncStatusBar />
       
-      <HorizontalFlowLayout />
-    </FlowContainer>
+      <HorizontalTimelineLayout />
+    </TimelineContainer>
   );
 };
 
-export const UnlockFlow: React.FC = () => {
+export const ProjectTimeline: React.FC = () => {
   return (
     <ThemeProvider>
-      <FlowStateProvider>
-        <FlowContent />
-      </FlowStateProvider>
+      <TimelineStateProvider>
+        <TimelineContent />
+      </TimelineStateProvider>
     </ThemeProvider>
   );
 };

@@ -1,11 +1,11 @@
 import React from 'react';
 import { useTheme } from '../providers/ThemeProvider';
 
-interface FlowContainerProps {
+interface TimelineContainerProps {
   children: React.ReactNode;
 }
 
-export const FlowContainer: React.FC<FlowContainerProps> = ({ children }) => {
+export const TimelineContainer: React.FC<TimelineContainerProps> = ({ children }) => {
   const theme = useTheme();
   
   return (

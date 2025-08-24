@@ -1,13 +1,13 @@
 import React from 'react';
 import { useTheme } from '../providers/ThemeProvider';
 
-interface StageIconProps {
+interface PhaseIconProps {
   type: 'play' | 'verify' | 'unlock' | 'download' | 'install';
   isActive?: boolean;
   isComplete?: boolean;
 }
 
-export const StageIcon: React.FC<StageIconProps> = ({ 
+export const PhaseIcon: React.FC<PhaseIconProps> = ({ 
   type, 
   isActive = false, 
   isComplete = false 

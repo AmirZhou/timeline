@@ -1,15 +1,15 @@
 import React from 'react';
 import { useTheme } from '../providers/ThemeProvider';
-import { StageIcon } from './StageIcon';
+import { PhaseIcon } from './PhaseIcon';
 
-interface StageNodeProps {
+interface PhaseNodeProps {
   iconType: 'play' | 'verify' | 'unlock' | 'download' | 'install';
   isActive?: boolean;
   isComplete?: boolean;
   children?: React.ReactNode;
 }
 
-export const StageNode: React.FC<StageNodeProps> = ({ 
+export const PhaseNode: React.FC<PhaseNodeProps> = ({ 
   iconType, 
   isActive = false, 
   isComplete = false,
@@ -45,7 +45,7 @@ export const StageNode: React.FC<StageNodeProps> = ({
         boxShadow: getBoxShadow(),
       }}
     >
-      <StageIcon type={iconType} isActive={isActive} isComplete={isComplete} />
+      <PhaseIcon type={iconType} isActive={isActive} isComplete={isComplete} />
       {children}
     </div>
   );

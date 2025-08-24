@@ -1,20 +1,20 @@
 import React from 'react';
-import { useFlowState } from '../providers/FlowStateProvider';
+import { useTimelineState } from '../providers/TimelineStateProvider';
 
-interface SubstepClickHandlerProps {
-  substepId: string;
+interface TaskClickHandlerProps {
+  taskId: string;
   children: React.ReactNode;
 }
 
-export const SubstepClickHandler: React.FC<SubstepClickHandlerProps> = ({ 
-  substepId, 
+export const TaskClickHandler: React.FC<TaskClickHandlerProps> = ({ 
+  taskId, 
   children 
 }) => {
-  const { setCurrentSubstep, completeSubstep } = useFlowState();
+  const { setCurrentTask, completeTask } = useTimelineState();
   
   const handleClick = () => {
-    setCurrentSubstep(substepId);
-    completeSubstep(substepId);
+    setCurrentTask(taskId);
+    completeTask(taskId);
   };
   
   return (

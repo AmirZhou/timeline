@@ -1,14 +1,14 @@
 import React from 'react';
 import { useTheme } from '../providers/ThemeProvider';
 
-interface SubstepNumberProps {
-  value: string;
+interface PhaseLabelProps {
+  text: string;
   isActive?: boolean;
   isComplete?: boolean;
 }
 
-export const SubstepNumber: React.FC<SubstepNumberProps> = ({ 
-  value, 
+export const PhaseLabel: React.FC<PhaseLabelProps> = ({ 
+  text, 
   isActive = false, 
   isComplete = false 
 }) => {
@@ -21,17 +21,16 @@ export const SubstepNumber: React.FC<SubstepNumberProps> = ({
   };
   
   return (
-    <span 
+    <div 
       style={{ 
         color: getColor(),
-        fontSize: '0.8rem',
-        fontWeight: 'bold',
-        marginRight: '0.5rem',
-        minWidth: '2rem',
-        display: 'inline-block',
+        fontSize: '0.9rem',
+        textAlign: 'center',
+        marginTop: '0.5rem',
+        fontWeight: isActive ? 'bold' : 'normal',
       }}
     >
-      {value}
-    </span>
+      {text}
+    </div>
   );
 };

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useFlowState } from '../providers/FlowStateProvider';
+import { useTimelineState } from '../providers/TimelineStateProvider';
 import { TaskCard } from '../display/TaskCard';
 import { TaskModal } from '../display/TaskModal';
-import { StageLabel } from '../display/StageLabel';
+import { PhaseLabel } from '../display/PhaseLabel';
 
 const phaseOrder = [
   "Phase 1: Foundation & Legal Framework",
@@ -25,8 +25,8 @@ const phaseNumbers = {
   "Phase 4: Polish & Market Package": "4"
 };
 
-export const HorizontalFlowLayout: React.FC = () => {
-  const { phases, isLoading } = useFlowState();
+export const HorizontalTimelineLayout: React.FC = () => {
+  const { phases, isLoading } = useTimelineState();
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const [selectedTaskNumber, setSelectedTaskNumber] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState(false);

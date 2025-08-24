@@ -1,13 +1,13 @@
 import React from 'react';
 import { useTheme } from '../providers/ThemeProvider';
 
-interface SubstepStatusProps {
+interface TaskStatusProps {
   complete: boolean;
   hasWarning?: boolean;
   hasError?: boolean;
 }
 
-export const SubstepStatus: React.FC<SubstepStatusProps> = ({ 
+export const TaskStatus: React.FC<TaskStatusProps> = ({ 
   complete, 
   hasWarning = false, 
   hasError = false 

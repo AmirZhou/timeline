@@ -1,10 +1,10 @@
 import React from 'react';
 
-interface VerticalSubstepListProps {
+interface VerticalTaskListProps {
   children: React.ReactNode;
 }
 
-export const VerticalSubstepList: React.FC<VerticalSubstepListProps> = ({ children }) => {
+export const VerticalTaskList: React.FC<VerticalTaskListProps> = ({ children }) => {
   return (
     <div 
       style={{ 
