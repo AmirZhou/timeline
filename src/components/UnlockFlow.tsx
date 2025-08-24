@@ -5,8 +5,6 @@ import { FlowContainer } from './layout/FlowContainer';
 import { HorizontalFlowLayout } from './layout/HorizontalFlowLayout';
 import { HeaderTitle } from './display/HeaderTitle';
 import { HeaderSubtitle } from './display/HeaderSubtitle';
-import { VersionIndicator } from './display/VersionIndicator';
-import { InteractiveIndicator } from './display/InteractiveIndicator';
 import { SyncStatusBar } from './status/SyncStatusBar';
 
 const FlowContent: React.FC = () => {
@@ -20,11 +18,6 @@ const FlowContent: React.FC = () => {
       <SyncStatusBar />
       
       <HorizontalFlowLayout />
-      
-      <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-        <VersionIndicator />
-        <InteractiveIndicator />
-      </div>
     </FlowContainer>
   );
 };
