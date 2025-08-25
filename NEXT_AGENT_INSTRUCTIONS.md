@@ -1,16 +1,39 @@
-# Instructions for Next Agent: Notion Database Update
+# Next Agent Instructions: Update Notion Database with Reference Field
 
-## Context Summary
-We are building an Alberta Legal Document Management Platform - a 4-month college project for two students focusing on legal tech portfolio development. We've created a comprehensive 24-task timeline and need to update the Notion database.
+## Context
+The timeline component now supports a new "Reference" field for storing external links, resources, and documentation. The backend extraction logic and UI components have been implemented, but the Notion database needs to be updated with actual data including the new Reference field.
 
 ## Current State
-- ✅ 24 detailed tasks created in JSON format: `alberta-legal-timeline-tasks.json`
-- ✅ Existing Notion database ID: `2584f2e1-1dba-819e-b0f5-fc54bff7b13f`
-- ✅ Current database has all required fields EXCEPT the new Resources field
-- ✅ Code updated to handle `reference` field (mapped to new Resources field)
+- ✅ Reference field extraction added to `/convex/directNotionApi.ts`
+- ✅ UI component updated in TaskModal to display Reference section
+- ✅ Type definitions updated with `reference?: string`
+- ✅ Documentation updated in CLAUDE.md
+- 🔄 **Next Step**: Update Notion database records with Reference field data
 
-## Database Field Mapping
-**Current Notion Database Fields:**
+## Database Information
+- **Database ID**: `2584f2e11dba819eb0f5fc54bff7b13f`
+- **Database Name**: "Access Alberta Legal - 4 Month Development Timeline"
+- **Location**: Available in project as Notion MCP integration
+
+## Task Overview
+1. **Fetch current database schema** to get field IDs
+2. **Delete existing records** from the database
+3. **Add Reference field** to database if it doesn't exist
+4. **Import new records** with Reference field data from JSON
+
+## Step-by-Step Instructions
+
+### Step 1: Database Schema Analysis
+Use Notion MCP to fetch the current database structure:
+
+```typescript
+// Get database schema to understand current field IDs
+mcp__notion__API-retrieve-a-database({
+  database_id: "2584f2e11dba819eb0f5fc54bff7b13f"
+})
+```
+
+**Expected Fields (verify these exist):**
 - Task Name (title)
 - Status (select)
 - Priority (select) 
@@ -24,74 +47,142 @@ We are building an Alberta Legal Document Management Platform - a 4-month colleg
 - Success Criteria (rich_text)
 - Dependencies (rich_text)
 - Risks (rich_text)
+- **Reference (rich_text)** ← NEW FIELD TO ADD
 
-**MISSING FIELD TO ADD:**
-- **Resources** (rich_text) - For external links, government resources, legal documentation
+### Step 2: Clear Existing Records
+Query all records and delete them:
 
-## Critical Tasks for Next Agent
+```typescript
+// First, get all records
+mcp__notion__API-post-database-query({
+  database_id: "2584f2e11dba819eb0f5fc54bff7b13f"
+})
 
-### 1. Add Resources Field to Database
-- Use Notion MCP to add new "Resources" field (rich_text type)
-- **IMPORTANT:** Field should be named "Resources" not "Reference" (Reference already exists in code)
-
-### 2. Update JSON File Structure
-- Add "Resources" field to all 24 tasks in `alberta-legal-timeline-tasks.json`
-- Use placeholder text: "TBD - Manual curation of relevant legal resources and documentation links"
-
-### 3. Database Schema Update Requirements
-The Resources field should contain:
-- Links to Alberta government legal resources
-- PIPA compliance documentation
-- Legal acts and regulations
-- Technical implementation guides
-- Industry best practices
-
-**Example Resources content:**
-```
-For PIPA Compliance task: 
-- Alberta PIPA Act: https://www.qp.alberta.ca/documents/Acts/P06P5.pdf
-- OIPC Guidelines: https://www.oipc.ab.ca/
-- Privacy Impact Assessment Template: [link]
+// Then delete each record
+mcp__notion__API-delete-a-block({
+  block_id: "record_id_here"
+})
 ```
 
-### 4. Code Integration Notes
-- `extractResourcesProperty()` function already exists in `convex/directNotionApi.ts`
-- `NotionTask.reference` field maps to new Resources database field
-- TaskModal component ready to display Resources information
+### Step 3: Add Reference Field (if missing)
+If Reference field doesn't exist, add it to database:
 
-### 5. Import Tasks to Database
-- Use Notion MCP to update existing 18 tasks OR create new 24 tasks
-- Ensure all field mappings work correctly
-- Test that Resources field displays properly
+```typescript
+mcp__notion__API-update-a-database({
+  database_id: "2584f2e11dba819eb0f5fc54bff7b13f",
+  properties: {
+    "Reference": {
+      "rich_text": {}
+    }
+  }
+})
+```
 
-## Important Constraints
-- **DO NOT** populate Resources field content yet - leave as TBD placeholders
-- **DO NOT** publish NPM package
-- Focus on database structure and task import
-- Verify all field mappings work with existing timeline component
+### Step 4: Import New Records with Reference Data
+Use the JSON file `/alberta-legal-timeline-tasks.json` to create new records.
 
-## Project Focus
-This is a legitimate legal tech project focusing on:
-- Document management (no legal advice)
-- Information sharing platform
-- Professional networking tools
-- Alberta lawyer directory (public info)
-- Legal forms catalog (public domain)
+**Important Mapping Notes:**
+- The JSON uses human-readable field names
+- Notion API requires actual property IDs from the database schema
+- Build a mapping object: `fieldName → propertyId`
 
-**Avoiding unauthorized practice of law** - no legal advice features.
+**Example JSON structure to expect:**
+```json
+{
+  "Task Name": "Setup: Project Foundation & Legal Research",
+  "Status": "In Progress",
+  "Priority": "Medium",
+  "Phase": "Phase 1: Foundation & Legal Framework",
+  "Phase Number": 1,
+  "Week": 1,
+  "Reference": "- API Documentation: https://docs.notion.com\n- Legal Guide: https://legal-guide.com"
+}
+```
 
-## Files Modified
-- `alberta-legal-timeline-tasks.json` - 24 detailed tasks
-- `CLAUDE.md` - Updated schema with Resources field
-- `src/types/task.ts` - Added reference field
-- `convex/directNotionApi.ts` - Added extractResourcesProperty
-- `src/components/display/TaskModal.tsx` - Display Resources
+**Create records with proper property IDs:**
+```typescript
+mcp__notion__API-post-page({
+  parent: {
+    page_id: "2584f2e11dba819eb0f5fc54bff7b13f"
+  },
+  properties: {
+    [titlePropertyId]: {
+      "title": [
+        {
+          "text": {
+            "content": taskData["Task Name"]
+          }
+        }
+      ]
+    },
+    [referencePropertyId]: {
+      "rich_text": [
+        {
+          "text": {
+            "content": taskData["Reference"] || ""
+          }
+        }
+      ]
+    }
+    // ... map all other fields similarly
+  }
+})
+```
+
+### Step 5: Verification
+After import:
+1. Query the database to verify all records were created
+2. Test the timeline application to ensure data displays correctly
+3. Verify Reference field shows in TaskModal when present
+
+## Key Implementation Details
+
+### Field ID Mapping Process
+1. Get database schema response
+2. Extract `properties` object
+3. Build mapping: `properties[fieldName] → propertyId`
+4. Use this mapping for all record operations
+
+### Reference Field Format
+- **Type**: `rich_text`
+- **Content**: Multi-line text with links and resources
+- **Example**:
+  ```
+  - Documentation: https://docs.example.com
+  - Tutorial: https://tutorial.com/guide  
+  - Stack Overflow: https://stackoverflow.com/questions/123
+  ```
+
+### Error Handling
+- Handle missing fields gracefully
+- Validate JSON data before import
+- Provide clear error messages for any failures
+- Ensure atomic operations (all succeed or all fail)
+
+## Files to Reference
+- **JSON Data**: `/alberta-legal-timeline-tasks.json` - Contains records to import
+- **Backend Logic**: `/convex/directNotionApi.ts` - Shows expected field extraction
+- **Type Definitions**: `/src/types/task.ts` - Shows NotionTask interface
 
 ## Success Criteria
-- New Resources field added to Notion database
-- JSON file updated with Resources placeholders
-- All 24 tasks imported successfully
-- Timeline component displays new Resources field
-- No errors in task loading/display
+✅ Database schema retrieved and field IDs mapped correctly  
+✅ All existing records deleted from database  
+✅ Reference field exists in database schema  
+✅ All JSON records imported successfully with Reference data  
+✅ Timeline application displays Reference field in TaskModal  
+✅ No data inconsistencies or missing fields  
 
-The user will manually curate Resources field content after database structure is complete.
+## Branch Strategy
+- Work on current branch (main) or create: `feature/populate-reference-data`
+- Commit changes with clear descriptions
+- Test thoroughly before pushing
+
+## Testing Commands
+After implementation, test with:
+```bash
+npm run dev  # Start development server
+# Navigate to timeline and click on tasks with Reference data
+# Verify Reference section appears in TaskModal
+```
+
+This task bridges the gap between the implemented Reference field feature and actual data population in the Notion database.
