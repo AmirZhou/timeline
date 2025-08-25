@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTheme } from '../providers/ThemeProvider';
+import { formatTaskTitle } from '../../utils/taskUtils';
 
 interface TimelineNodeProps {
   task: {
@@ -80,7 +81,7 @@ export const TimelineNode: React.FC<TimelineNodeProps> = ({
                 (e.target as HTMLElement).style.color = theme.text;
               }}
             >
-              {task.title}
+              {formatTaskTitle(task.title, task.properties.week)}
             </div>
             {task.properties.assignee && (
               <div className="text-gray-400 text-xs font-mono mt-1">

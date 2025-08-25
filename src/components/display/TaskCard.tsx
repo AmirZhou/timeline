@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTheme } from '../providers/ThemeProvider';
+import { formatTaskTitle } from '../../utils/taskUtils';
 
 interface TaskCardProps {
   task: {
@@ -72,7 +73,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, taskNumber, onClick })
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <span className="text-sm font-medium flex-shrink-0" style={{ color: theme.textSecondary }}>{taskNumber}</span>
           <span className="text-sm font-medium truncate" style={{ color: theme.text }}>
-            {getShortTitle(task.title)}
+            {getShortTitle(formatTaskTitle(task.title, task.properties.week))}
           </span>
         </div>
       </div>

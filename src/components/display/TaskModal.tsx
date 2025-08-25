@@ -6,6 +6,7 @@ import { TaskModalProps } from '../../types/task';
 import { getStatusColor, getStatusDetails } from '../../utils/statusUtils';
 import { getAssigneeDetails } from '../../utils/assigneeUtils';
 import { getPriorityColor } from '../../utils/priorityUtils';
+import { formatTaskTitle, renderTextWithLinks } from '../../utils/taskUtils';
 
 
 export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, taskNumber }) => {
@@ -89,7 +90,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
           </div>
           
           <h2 className="text-2xl font-bold font-mono mt-4 leading-tight" style={{ color: theme.text }}>
-            {task.title}
+            {formatTaskTitle(task.title, task.properties.week)}
           </h2>
           
         </div>
@@ -167,7 +168,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
                 <span className="font-medium font-mono" style={{ color: theme.text }}>Reference</span>
               </div>
               <div className="text-sm font-mono leading-relaxed whitespace-pre-wrap" style={{ color: theme.textSecondary }}>
-                {task.properties.reference}
+                {renderTextWithLinks(task.properties.reference, { color: theme.accent })}
               </div>
             </div>
           )}
@@ -189,7 +190,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
               (e.target as HTMLElement).style.color = theme.textSecondary;
             }}
           >
-            View in Notion
+            Edit in Notion
           </a>
         </div>
       </div>
