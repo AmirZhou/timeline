@@ -112,7 +112,65 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
             </div>
           )}
 
+          {/* Success Criteria Section */}
+          {task.properties.successCriteria && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: theme.accent }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 003.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+                <span className="font-medium font-mono" style={{ color: theme.text }}>Success Criteria</span>
+              </div>
+              <div className="text-sm font-mono leading-relaxed whitespace-pre-wrap" style={{ color: theme.textSecondary }}>
+                {task.properties.successCriteria}
+              </div>
+            </div>
+          )}
 
+          {/* Dependencies Section */}
+          {task.properties.dependencies && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: theme.accent }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+                <span className="font-medium font-mono" style={{ color: theme.text }}>Dependencies</span>
+              </div>
+              <div className="text-sm font-mono leading-relaxed whitespace-pre-wrap" style={{ color: theme.textSecondary }}>
+                {task.properties.dependencies}
+              </div>
+            </div>
+          )}
+
+          {/* Risks Section */}
+          {task.properties.risks && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: theme.accent }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <span className="font-medium font-mono" style={{ color: theme.text }}>Risks</span>
+              </div>
+              <div className="text-sm font-mono leading-relaxed whitespace-pre-wrap" style={{ color: theme.textSecondary }}>
+                {task.properties.risks}
+              </div>
+            </div>
+          )}
+
+          {/* Reference Section */}
+          {task.properties.reference && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: theme.accent }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                <span className="font-medium font-mono" style={{ color: theme.text }}>Reference</span>
+              </div>
+              <div className="text-sm font-mono leading-relaxed whitespace-pre-wrap" style={{ color: theme.textSecondary }}>
+                {task.properties.reference}
+              </div>
+            </div>
+          )}
 
         </div>
 

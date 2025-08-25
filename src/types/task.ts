@@ -2,14 +2,25 @@ export interface NotionTask {
   _id: string;
   title: string;
   properties: {
-    status: "Not Started" | "In Progress" | "Completed";
-    priority: "Critical" | "High" | "Medium" | "Low";
+    week?: number;
+    phase?: string;
+    phaseNumber?: number;
+    status?: "Not Started" | "In Progress" | "In Review" | "Completed" | "Blocked";
+    priority?: "Critical" | "High" | "Medium" | "Low";
     assignee?: string;
-    description: string;
-    week: number;
-    phase: string;
+    category?: string[];
+    description?: string;
+    successCriteria?: string;
+    dependencies?: string;
+    risks?: string;
+    dueDate?: string;
+    reference?: string;
   };
   url: string;
+  notionId: string;
+  lastModified: number;
+  createdTime: number;
+  isArchived: boolean;
 }
 
 export interface TaskModalProps {

@@ -110,6 +110,7 @@ extractDateProperty(properties: any, mapping: PropertyMapping, propertyName: str
 - **Success Criteria** (rich_text): Completion requirements
 - **Dependencies** (rich_text): Prerequisites
 - **Risks** (rich_text): Potential issues
+- **Reference** (rich_text): External links, resources, and documentation
 
 ## Type Definitions
 
@@ -129,6 +130,7 @@ interface NotionTask {
   successCriteria?: string;
   dependencies?: string;
   risks?: string;
+  reference?: string;
   createdTime: string;
   lastEditedTime: string;
 }

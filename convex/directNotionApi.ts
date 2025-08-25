@@ -141,6 +141,11 @@ function extractDueDate(properties: any, mapping: PropertyMapping): string | und
   return extractDateProperty(properties, mapping, 'Due Date') || properties['oY^i']?.date?.start;
 }
 
+function extractReference(properties: any, mapping: PropertyMapping): string | undefined {
+  return extractRichTextProperty(properties, mapping, 'Reference') ||
+         properties['Reference']?.rich_text?.map((rt: any) => rt.plain_text).join('') || undefined;
+}
+
 export const getProjectTimelineDirect = action({
   args: {
     phase: v.optional(v.string()),
@@ -200,6 +205,7 @@ export const getProjectTimelineDirect = action({
           dependencies: extractDependencies(page.properties, propertyMapping),
           risks: extractRisks(page.properties, propertyMapping),
           dueDate: extractDueDate(page.properties, propertyMapping),
+          reference: extractReference(page.properties, propertyMapping),
         },
         lastModified: new Date(page.last_edited_time).getTime(),
         createdTime: new Date(page.created_time).getTime(),
