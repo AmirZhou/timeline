@@ -8,7 +8,7 @@ import { VerticalTimelineLayout } from './components/layout/VerticalTimelineLayo
 import { SyncStatusBar } from './components/status/SyncStatusBar';
 import { injectTimelineCSS } from './utils/injectCSS';
 
-// Multi-framework environment variable detection
+// Multi-framework environment variable detection (runtime only)
 const getConvexUrl = (providedUrl?: string): string => {
   if (providedUrl) {
     return providedUrl;
@@ -17,18 +17,27 @@ const getConvexUrl = (providedUrl?: string): string => {
   // Safe environment variable access for browser compatibility
   const env = typeof process !== 'undefined' && process.env ? process.env : {};
   
-  // Try multiple environment variable patterns
-  const envUrl = 
-    (import.meta as any).env?.VITE_CONVEX_URL ||        // Vite
-    env.NEXT_PUBLIC_CONVEX_URL ||                       // Next.js  
-    env.REACT_APP_CONVEX_URL ||                         // Create React App
-    env.CONVEX_URL;                                     // Node/others
+  // Runtime-only environment variable patterns (avoid build-time substitution)
+  let envUrl: string | undefined;
+  
+  // Check window object for Vite-style variables (client-side runtime)
+  if (typeof window !== 'undefined' && (window as any).process?.env) {
+    envUrl = (window as any).process.env.VITE_CONVEX_URL;
+  }
+  
+  // Fallback to standard environment variables
+  if (!envUrl) {
+    envUrl = env.NEXT_PUBLIC_CONVEX_URL ||              // Next.js  
+             env.REACT_APP_CONVEX_URL ||                // Create React App
+             env.CONVEX_URL;                            // Node/others
+  }
 
   if (!envUrl) {
     throw new Error(
       'Convex URL is required. Please provide it via:\n' +
       '- convexUrl prop, or\n' +
-      '- Environment variable: VITE_CONVEX_URL, NEXT_PUBLIC_CONVEX_URL, REACT_APP_CONVEX_URL, or CONVEX_URL'
+      '- Environment variable: NEXT_PUBLIC_CONVEX_URL, REACT_APP_CONVEX_URL, or CONVEX_URL\n' +
+      '- For Vite: ensure VITE_CONVEX_URL is available at runtime'
     );
   }
 
