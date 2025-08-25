@@ -47,13 +47,12 @@ const lightTheme: ThemeColors = {
   },
 };
 
-interface ThemeContextType {
-  colors: ThemeColors;
+interface ThemeContextType extends ThemeColors {
   mode: ThemeMode;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  colors: darkTheme,
+  ...darkTheme,
   mode: 'dark',
 });
 
@@ -84,7 +83,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   }, [colors]);
 
   return (
-    <ThemeContext.Provider value={{ colors, mode: theme }}>
+    <ThemeContext.Provider value={{ ...colors, mode: theme }}>
       {children}
     </ThemeContext.Provider>
   );

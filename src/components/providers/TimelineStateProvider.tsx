@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useMemo, useEffect } from 'react';
 import { useAction } from "convex/react";
-import { api } from "../../../convex-api";
+import { api } from "../../../convex/_generated/api";
 import { ErrorBoundary } from '../status/ErrorBoundary';
 import { ErrorFallback } from '../status/ErrorFallback';
 
@@ -22,7 +22,7 @@ interface TimelineStateContextType {
   completePhase: (phaseId: string) => void;
   completeTask: (taskId: string) => void;
   phases: PhaseGroup;
-  syncStatus: { status: string; lastSyncTime: number | null; recordCount: number; error?: string };
+  syncStatus: { status: string; lastSyncTime: number | null; recordCount: number; error?: string | undefined };
   isLoading: boolean;
   triggerSync: () => void;
   lastFetch: Date | null;
@@ -46,7 +46,7 @@ export const TimelineStateProvider: React.FC<TimelineStateProviderProps> = ({ ch
   const [allTasks, setAllTasks] = useState<any[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [lastFetch, setLastFetch] = useState<Date | null>(null);
-  const [syncStatus, setSyncStatus] = useState({ status: 'direct_api', lastSyncTime: null, recordCount: 0, error: undefined });
+  const [syncStatus, setSyncStatus] = useState<{ status: string; lastSyncTime: number | null; recordCount: number; error?: string | undefined }>({ status: 'direct_api', lastSyncTime: null, recordCount: 0, error: undefined });
   
   const getProjectTimelineDirectAction = useAction(api.directNotionApi.getProjectTimelineDirect);
 
