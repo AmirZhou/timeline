@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useTimelineState } from '../providers/TimelineStateProvider';
+import { useTheme } from '../providers/ThemeProvider';
 import { TimelineNode } from '../display/TimelineNode';
 import { TaskModal } from '../display/TaskModal';
 import { ErrorBoundary } from '../status/ErrorBoundary';
@@ -8,6 +9,7 @@ import { ErrorFallback } from '../status/ErrorFallback';
 export const VerticalTimelineLayout: React.FC = () => {
   try {
     const { phases, isLoading } = useTimelineState();
+    const theme = useTheme();
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const [selectedTaskNumber, setSelectedTaskNumber] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -81,7 +83,7 @@ export const VerticalTimelineLayout: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: theme.text }}></div>
         <span className="ml-3 text-gray-400">Loading project timeline...</span>
       </div>
     );
@@ -130,7 +132,7 @@ export const VerticalTimelineLayout: React.FC = () => {
   const TimelineColumn: React.FC<{ items: typeof timelineItemsWithSpacing, columnIndex: number }> = ({ items, columnIndex }) => (
     <div className="relative">
       {/* Vertical Line for this column */}
-      <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-white opacity-30"></div>
+      <div className="absolute left-6 top-0 bottom-0 w-0.5 opacity-30" style={{ backgroundColor: theme.border }}></div>
       
       {/* Timeline Items */}
       <div className="space-y-8">
@@ -156,7 +158,7 @@ export const VerticalTimelineLayout: React.FC = () => {
   const MobileTimeline: React.FC = () => (
     <div className="relative">
       {/* Vertical Line */}
-      <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-white opacity-30"></div>
+      <div className="absolute left-6 top-0 bottom-0 w-0.5 opacity-30" style={{ backgroundColor: theme.border }}></div>
       
       {/* Timeline Items */}
       <div className="space-y-8">

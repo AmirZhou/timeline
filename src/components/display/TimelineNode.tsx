@@ -48,12 +48,12 @@ export const TimelineNode: React.FC<TimelineNodeProps> = ({
   return (
     <div className="relative flex items-start group">
       {/* Timeline Dot */}
-      <div className="absolute left-6 -ml-2 w-4 h-4 bg-white rounded-full border-4 border-gray-800 z-10"></div>
+      <div className="absolute left-6 -ml-2 w-4 h-4 rounded-full border-4 z-10" style={{ backgroundColor: theme.text, borderColor: theme.background }}></div>
       
       <div className="ml-16 cursor-pointer" onClick={handleClick}>
         {/* Phase Title (only for first task of phase) */}
         {isPhaseStart && (
-          <div className="text-white font-mono text-lg font-bold mb-2 tracking-wide">
+          <div className="font-mono text-lg font-bold mb-2 tracking-wide" style={{ color: theme.text }}>
             {phaseTitle}
           </div>
         )}
@@ -70,7 +70,7 @@ export const TimelineNode: React.FC<TimelineNodeProps> = ({
           
           {/* Task Title */}
           <div className="flex-1 min-w-0">
-            <div className="text-white font-medium leading-relaxed group-hover:text-accent transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-accent focus:ring-opacity-50">
+            <div className="font-medium leading-relaxed group-hover:text-accent transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-accent focus:ring-opacity-50" style={{ color: theme.text }}>
               {task.title}
             </div>
             {task.properties.assignee && (
