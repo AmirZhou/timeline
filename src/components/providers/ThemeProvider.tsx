@@ -36,14 +36,14 @@ const lightTheme: ThemeColors = {
   background: '#f8fafc',
   text: '#1e293b',
   textSecondary: '#64748b',
-  accent: '#2563eb',
+  accent: '#1d4ed8',
   success: '#059669',
   warning: '#d97706',
   error: '#dc2626',
   border: '#cbd5e1',
   glass: {
-    background: 'rgba(248, 250, 252, 0.9)',
-    border: 'rgba(71, 85, 105, 0.2)',
+    background: 'rgba(248, 250, 252, 0.85)',
+    border: 'rgba(71, 85, 105, 0.25)',
   },
 };
 

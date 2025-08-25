@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useTimelineState } from '../providers/TimelineStateProvider';
+import { useTheme } from '../providers/ThemeProvider';
 import { ErrorFallback } from './ErrorFallback';
 
 export const SyncStatusBar: React.FC = () => {
   try {
     const { syncStatus, triggerSync, lastFetch } = useTimelineState();
+    const theme = useTheme();
     const [isSyncing, setIsSyncing] = useState(false);
     const [syncDelay, setSyncDelay] = useState<number | null>(null);
     const [syncError, setSyncError] = useState<string | null>(null);
@@ -42,7 +44,7 @@ export const SyncStatusBar: React.FC = () => {
   const hasError = syncStatus.status === 'error' || syncError;
 
   return (
-    <div className={`bg-black/10 backdrop-blur-sm border border-white/10 rounded-xl p-4 mb-6 focus-within:ring-2 focus-within:ring-accent focus-within:ring-opacity-50 ${hasError ? 'border-red-500/30' : ''}`}>
+    <div className={`backdrop-blur-sm border rounded-xl p-4 mb-6 focus-within:ring-2 focus-within:ring-accent focus-within:ring-opacity-50 ${hasError ? 'border-red-500/30' : ''}`} style={{ backgroundColor: theme.glass.background, borderColor: theme.glass.border }}>
       {hasError && (
         <div className="mb-2 text-sm text-red-400">
           ⚠️ {syncError || syncStatus.error || 'Sync error occurred'}
@@ -52,17 +54,31 @@ export const SyncStatusBar: React.FC = () => {
         <div className="flex items-center gap-3">
           <div className={`w-2 h-2 rounded-full ${statusColor} ${isSyncing ? 'animate-pulse' : ''}`}></div>
           <span className={`text-sm ${hasError ? 'text-red-400' : 'text-gray-400'}`}>
-            Last synced: <span className={`font-medium ${hasError ? 'text-red-300' : 'text-white'}`}>{lastSyncTime}</span>
+            Last synced: <span className={`font-medium ${hasError ? 'text-red-300' : ''}`} style={{ color: hasError ? '#fca5a5' : theme.text }}>{lastSyncTime}</span>
           </span>
         </div>
         <button 
           onClick={handleSync}
           disabled={isSyncing}
-          className={`text-sm font-medium px-3 py-1 transition-all duration-200 motion-reduce:transition-none flex items-center gap-1 ${
+          className={`text-sm font-medium px-3 py-1 rounded-md transition-all duration-200 motion-reduce:transition-none flex items-center gap-1 ${
             isSyncing 
-              ? 'text-gray-500 cursor-not-allowed' 
-              : 'text-accent hover:text-white focus:outline-none focus:ring-2 focus:ring-accent focus:ring-opacity-50'
+              ? 'cursor-not-allowed' 
+              : 'focus:outline-none focus:ring-2 focus:ring-accent focus:ring-opacity-50 hover:shadow-sm'
           }`}
+          style={{
+            color: isSyncing ? theme.textSecondary : theme.accent,
+            backgroundColor: isSyncing ? 'transparent' : theme.mode === 'light' ? 'rgba(29, 78, 216, 0.1)' : 'rgba(0, 255, 0, 0.1)'
+          }}
+          onMouseEnter={(e) => {
+            if (!isSyncing) {
+              (e.target as HTMLElement).style.backgroundColor = theme.mode === 'light' ? 'rgba(29, 78, 216, 0.15)' : 'rgba(0, 255, 0, 0.15)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isSyncing) {
+              (e.target as HTMLElement).style.backgroundColor = theme.mode === 'light' ? 'rgba(29, 78, 216, 0.1)' : 'rgba(0, 255, 0, 0.1)';
+            }
+          }}
         >
           <svg 
             width="14" 

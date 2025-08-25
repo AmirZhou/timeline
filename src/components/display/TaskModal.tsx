@@ -40,14 +40,17 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      style={{ 
+        backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.3)'
+      }}
       onClick={handleBackdropClick}
       onKeyDown={handleEscapeKey}
       tabIndex={-1}
     >
-      <div className="backdrop-blur-xl border rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fadeIn" style={{ backgroundColor: theme.glass.background, borderColor: theme.glass.border }}>
+      <div className="backdrop-blur-2xl border rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fadeIn" style={{ backgroundColor: theme.glass.background, borderColor: theme.glass.border }}>
         {/* Header */}
-        <div className="sticky top-0 backdrop-blur-lg border-b p-6 rounded-t-xl" style={{ backgroundColor: theme.glass.background, borderColor: theme.glass.border }}>
+        <div className="sticky top-0 border-b p-6 rounded-t-2xl" style={{ backgroundColor: theme.glass.background, borderColor: theme.glass.border }}>
           <div className="flex justify-between items-start">
             <div className="flex items-start gap-4 flex-1">
               <div className="flex items-center gap-3">
