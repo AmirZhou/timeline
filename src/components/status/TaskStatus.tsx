@@ -7,13 +7,15 @@ interface TaskStatusProps {
   hasWarning?: boolean;
   hasError?: boolean;
   isLoading?: boolean;
+  isActive?: boolean;
 }
 
 export const TaskStatus: React.FC<TaskStatusProps> = ({ 
   complete, 
   hasWarning = false, 
   hasError = false,
-  isLoading = false
+  isLoading = false,
+  isActive = false
 }) => {
   try {
     const theme = useTheme();
