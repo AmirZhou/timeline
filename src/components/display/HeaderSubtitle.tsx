@@ -1,7 +1,11 @@
 import React from 'react';
 import { useTheme } from '../providers/ThemeProvider';
 
-export const HeaderSubtitle: React.FC = () => {
+interface HeaderSubtitleProps {
+  subtitle?: string;
+}
+
+export const HeaderSubtitle: React.FC<HeaderSubtitleProps> = ({ subtitle = "ACCESS ALBERTA LEGAL SERVICES" }) => {
   const theme = useTheme();
   
   return (
@@ -14,7 +18,7 @@ export const HeaderSubtitle: React.FC = () => {
         letterSpacing: '0.05em',
       }}
     >
-      ACCESS ALBERTA LEGAL SERVICES
+      {subtitle}
     </p>
   );
 };

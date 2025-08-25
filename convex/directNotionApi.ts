@@ -149,11 +149,15 @@ export const getProjectTimelineDirect = action({
     limit: v.optional(v.number()),
   },
   handler: async (_ctx, filters) => {
-    const databaseId = "2584f2e11dba819eb0f5fc54bff7b13f";
+    const databaseId = process.env.NOTION_DATABASE_ID;
     const notionApiKey = process.env.NOTION_API_KEY;
     
     if (!notionApiKey) {
       throw new Error("NOTION_API_KEY not configured");
+    }
+
+    if (!databaseId) {
+      throw new Error("NOTION_DATABASE_ID not configured");
     }
 
     try {

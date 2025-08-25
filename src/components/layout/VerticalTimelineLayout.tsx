@@ -2,9 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { useTimelineState } from '../providers/TimelineStateProvider';
 import { TimelineNode } from '../display/TimelineNode';
 import { TaskModal } from '../display/TaskModal';
+import { ErrorBoundary } from '../status/ErrorBoundary';
+import { ErrorFallback } from '../status/ErrorFallback';
 
 export const VerticalTimelineLayout: React.FC = () => {
-  const { phases, isLoading } = useTimelineState();
+  try {
+    const { phases, isLoading } = useTimelineState();
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const [selectedTaskNumber, setSelectedTaskNumber] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,9 +26,10 @@ export const VerticalTimelineLayout: React.FC = () => {
 
   // Create timeline items from tasks using dynamic phase numbers
   const timelineItems = useMemo(() => {
-    if (isLoading || !phases) {
-      return [];
-    }
+    try {
+      if (isLoading || !phases) {
+        return [];
+      }
     const items: Array<{
       task: any;
       taskNumber: string;
@@ -68,6 +72,10 @@ export const VerticalTimelineLayout: React.FC = () => {
     });
 
     return items;
+    } catch (error) {
+      console.error('Error processing timeline items:', error);
+      return [];
+    }
   }, [phases, isLoading]);
 
   if (isLoading) {
@@ -76,6 +84,15 @@ export const VerticalTimelineLayout: React.FC = () => {
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
         <span className="ml-3 text-gray-400">Loading project timeline...</span>
       </div>
+    );
+  }
+
+  if (!phases || Object.keys(phases).length === 0) {
+    return (
+      <ErrorFallback 
+        message="No timeline data available" 
+        retry={() => window.location.reload()}
+      />
     );
   }
 
@@ -163,32 +180,47 @@ export const VerticalTimelineLayout: React.FC = () => {
   );
 
   return (
-    <>
+    <ErrorBoundary>
       {/* Mobile Layout: Single Column */}
       <div className="block md:hidden max-w-4xl mx-auto py-8">
-        <MobileTimeline />
-        
+        <ErrorBoundary fallback={<ErrorFallback message="Failed to load mobile timeline" />}>
+          <MobileTimeline />
+        </ErrorBoundary>
       </div>
 
       {/* Desktop Layout: Two Columns */}
       <div className="hidden md:block max-w-6xl mx-auto py-8">
         <div className="grid grid-cols-2 gap-16">
           {/* Left Column: Phases 1-2 */}
-          <TimelineColumn items={leftColumnItemsWithSpacing} columnIndex={0} />
+          <ErrorBoundary fallback={<ErrorFallback message="Failed to load left column" />}>
+            <TimelineColumn items={leftColumnItemsWithSpacing} columnIndex={0} />
+          </ErrorBoundary>
           
           {/* Right Column: Phases 3-4 */}
-          <TimelineColumn items={rightColumnItemsWithSpacing} columnIndex={1} />
+          <ErrorBoundary fallback={<ErrorFallback message="Failed to load right column" />}>
+            <TimelineColumn items={rightColumnItemsWithSpacing} columnIndex={1} />
+          </ErrorBoundary>
         </div>
-        
       </div>
 
       {/* Task Detail Modal */}
-      <TaskModal
-        task={selectedTask}
-        taskNumber={selectedTaskNumber}
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-      />
-    </>
+      <ErrorBoundary fallback={<ErrorFallback message="Failed to load task modal" />}>
+        <TaskModal
+          task={selectedTask}
+          taskNumber={selectedTaskNumber}
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+        />
+      </ErrorBoundary>
+    </ErrorBoundary>
   );
+  } catch (error) {
+    console.error('VerticalTimelineLayout error:', error);
+    return (
+      <ErrorFallback 
+        message="Failed to load timeline layout" 
+        retry={() => window.location.reload()}
+      />
+    );
+  }
 };

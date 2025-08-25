@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, ReactNode, useMemo, useEffect } from 'react';
 import { useAction } from "convex/react";
 import { api } from "../../../convex-api";
+import { ErrorBoundary } from '../status/ErrorBoundary';
+import { ErrorFallback } from '../status/ErrorFallback';
 
 interface TimelineState {
   currentPhase: string;
@@ -20,7 +22,7 @@ interface TimelineStateContextType {
   completePhase: (phaseId: string) => void;
   completeTask: (taskId: string) => void;
   phases: PhaseGroup;
-  syncStatus: any;
+  syncStatus: { status: string; lastSyncTime: number | null; recordCount: number; error?: string };
   isLoading: boolean;
   triggerSync: () => void;
   lastFetch: Date | null;
@@ -44,7 +46,7 @@ export const TimelineStateProvider: React.FC<TimelineStateProviderProps> = ({ ch
   const [allTasks, setAllTasks] = useState<any[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [lastFetch, setLastFetch] = useState<Date | null>(null);
-  const [syncStatus, setSyncStatus] = useState({ status: 'direct_api', lastSyncTime: null, recordCount: 0 });
+  const [syncStatus, setSyncStatus] = useState({ status: 'direct_api', lastSyncTime: null, recordCount: 0, error: undefined });
   
   const getProjectTimelineDirectAction = useAction(api.directNotionApi.getProjectTimelineDirect);
 
@@ -97,11 +99,13 @@ export const TimelineStateProvider: React.FC<TimelineStateProviderProps> = ({ ch
         recordCount: result.length 
       });
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       console.error("❌ Direct API fetch failed:", error);
       setSyncStatus({ 
         status: 'error', 
         lastSyncTime: Date.now(), 
-        recordCount: 0 
+        recordCount: 0,
+        error: errorMessage
       });
     } finally {
       setIsLoading(false);
@@ -113,21 +117,32 @@ export const TimelineStateProvider: React.FC<TimelineStateProviderProps> = ({ ch
     triggerSync();
   }, []);
 
+  const contextValue = useMemo(() => ({
+    state,
+    setCurrentPhase,
+    setCurrentTask,
+    completePhase,
+    completeTask,
+    phases: phaseGroups,
+    syncStatus,
+    isLoading,
+    triggerSync,
+    lastFetch,
+  }), [state, phaseGroups, syncStatus, isLoading, lastFetch]);
+
   return (
-    <TimelineStateContext.Provider value={{
-      state,
-      setCurrentPhase,
-      setCurrentTask,
-      completePhase,
-      completeTask,
-      phases: phaseGroups,
-      syncStatus,
-      isLoading,
-      triggerSync,
-      lastFetch,
-    }}>
-      {children}
-    </TimelineStateContext.Provider>
+    <ErrorBoundary
+      fallback={(
+        <ErrorFallback 
+          message="Failed to load timeline state" 
+          retry={triggerSync}
+        />
+      )}
+    >
+      <TimelineStateContext.Provider value={contextValue}>
+        {children}
+      </TimelineStateContext.Provider>
+    </ErrorBoundary>
   );
 };
 

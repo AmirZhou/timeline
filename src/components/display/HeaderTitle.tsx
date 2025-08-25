@@ -1,7 +1,11 @@
 import React from 'react';
 import { useTheme } from '../providers/ThemeProvider';
 
-export const HeaderTitle: React.FC = () => {
+interface HeaderTitleProps {
+  title?: string;
+}
+
+export const HeaderTitle: React.FC<HeaderTitleProps> = ({ title = "PROJECT TIMELINE" }) => {
   const theme = useTheme();
   
   return (
@@ -15,7 +19,7 @@ export const HeaderTitle: React.FC = () => {
         letterSpacing: '0.1em',
       }}
     >
-      PROJECT TIMELINE
+      {title}
     </h1>
   );
 };
