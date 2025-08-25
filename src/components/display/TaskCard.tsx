@@ -68,6 +68,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, taskNumber, onClick })
       onClick={handleClick}
     >
       <div className="flex items-center gap-3 flex-1 min-w-0">
+        <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${getStatusColor(task.properties.status)}`}></div>
+        
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <span className="text-sm font-medium flex-shrink-0" style={{ color: theme.textSecondary }}>{taskNumber}</span>
           <span className="text-sm font-medium truncate" style={{ color: theme.text }}>
