@@ -27,5 +27,9 @@ dist-ssr
 # Development tools
 .playwright-mcp
 
+# Project data files (should not be committed)
+notion-database-records.json
+*.json.backup
+
 # Ignored for the template, you probably want to remove it:
 package-lock.json
