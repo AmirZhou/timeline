@@ -65,9 +65,12 @@ Optional columns for more details:
 ### Step 3: Deploy with Convex
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/timeline-component
-cd timeline-component
+# Install the package
+npm install @bitravage/timeline
+
+# Or clone for development
+git clone https://github.com/AmirZhou/timeline
+cd timeline
 
 # Install dependencies
 npm install
@@ -79,10 +82,14 @@ echo "NOTION_API_KEY=your_notion_api_key_here" > .env.local
 npx convex deploy
 ```
 
+**Requirements:**
+- Node.js 18+ 
+- React 18+ (works with React 19)
+
 ### Step 4: Add to Your Website
 
 ```jsx
-import { ProjectTimeline } from '@yourusername/timeline-component';
+import { ProjectTimeline } from '@bitravage/timeline';
 
 function App() {
   return (
@@ -122,7 +129,7 @@ This component uses **Notion** as your database and **Convex** for seamless real
 - 📺 [Watch the 2-minute setup video](#)
 - 📖 [Read the documentation](./docs)
 - 💬 [Join our Discord community](#)
-- 🐛 [Report issues on GitHub](https://github.com/yourusername/timeline-component/issues)
+- 🐛 [Report issues on GitHub](https://github.com/AmirZhou/timeline/issues)
 
 ## License
 

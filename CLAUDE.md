@@ -163,16 +163,16 @@ CONVEX_URL=your_convex_deployment_url
 
 ## NPM Package
 
-Published as: `@yourusername/timeline-component`
+Published as: `@bitravage/timeline`
 
 Installation:
 ```bash
-npm install @yourusername/timeline-component
+npm install @bitravage/timeline
 ```
 
 Usage:
 ```jsx
-import { ProjectTimeline } from '@yourusername/timeline-component';
+import { ProjectTimeline } from '@bitravage/timeline';
 
 function App() {
   return <ProjectTimeline />;
