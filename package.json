@@ -1,11 +1,20 @@
 {
   "name": "@bitravage/timeline",
   "private": false,
-  "version": "1.0.1",
+  "version": "1.0.7",
   "description": "A reusable React timeline component with Notion integration",
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js"
+    },
+    "./style.css": "./dist/timeline.css",
+    "./dist/timeline.css": "./dist/timeline.css"
+  },
   "files": [
     "dist"
   ],

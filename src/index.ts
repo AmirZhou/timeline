@@ -1,3 +1,6 @@
+// Import CSS for bundling
+import './index.css';
+
 // Main timeline component export
 export { Timeline } from './Timeline';
 
