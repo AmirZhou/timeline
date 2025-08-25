@@ -42,8 +42,8 @@ const lightTheme: ThemeColors = {
   error: '#dc2626',
   border: '#cbd5e1',
   glass: {
-    background: 'rgba(248, 250, 252, 0.85)',
-    border: 'rgba(71, 85, 105, 0.25)',
+    background: 'rgba(248, 250, 252, 0.80)',
+    border: 'rgba(71, 85, 105, 0.30)',
   },
 };
 

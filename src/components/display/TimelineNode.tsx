@@ -70,7 +70,16 @@ export const TimelineNode: React.FC<TimelineNodeProps> = ({
           
           {/* Task Title */}
           <div className="flex-1 min-w-0">
-            <div className="font-medium leading-relaxed group-hover:text-accent transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-accent focus:ring-opacity-50" style={{ color: theme.text }}>
+            <div 
+              className="font-medium leading-relaxed transition-colors duration-200" 
+              style={{ color: theme.text }}
+              onMouseEnter={(e) => {
+                (e.target as HTMLElement).style.color = theme.accent;
+              }}
+              onMouseLeave={(e) => {
+                (e.target as HTMLElement).style.color = theme.text;
+              }}
+            >
               {task.title}
             </div>
             {task.properties.assignee && (

@@ -50,7 +50,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
     >
       <div className="backdrop-blur-2xl border rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fadeIn" style={{ backgroundColor: theme.glass.background, borderColor: theme.glass.border }}>
         {/* Header */}
-        <div className="sticky top-0 border-b p-6 rounded-t-2xl" style={{ backgroundColor: theme.glass.background, borderColor: theme.glass.border }}>
+        <div className="sticky top-0 border-b p-6 rounded-t-2xl" style={{ borderColor: theme.glass.border }}>
           <div className="flex justify-between items-start">
             <div className="flex items-start gap-4 flex-1">
               <div className="flex items-center gap-3">
@@ -95,7 +95,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6" style={{ backgroundColor: 'transparent' }}>
 
           {/* Description Section */}
           {task.properties.description && (
@@ -122,7 +122,14 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
             href={task.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-gray-400 hover:text-white font-mono underline"
+            className="text-sm font-mono underline transition-colors duration-200"
+            style={{ color: theme.textSecondary }}
+            onMouseEnter={(e) => {
+              (e.target as HTMLElement).style.color = theme.accent;
+            }}
+            onMouseLeave={(e) => {
+              (e.target as HTMLElement).style.color = theme.textSecondary;
+            }}
           >
             View in Notion
           </a>
