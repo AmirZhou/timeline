@@ -59,9 +59,9 @@ export const TimelineNode: React.FC<TimelineNodeProps> = ({
         )}
         
         {/* Task Content */}
-        <div className="flex items-start space-x-4 p-3 rounded-lg transition-all duration-200">
+        <div className="flex items-start p-3 rounded-lg transition-all duration-200">
           {/* Task Number and Status */}
-          <div className="flex items-center space-x-3 min-w-0">
+          <div className="flex items-center space-x-3 mr-4">
             <span className="text-gray-400 font-mono text-sm min-w-[3rem]">
               {taskNumber}
             </span>
@@ -69,7 +69,7 @@ export const TimelineNode: React.FC<TimelineNodeProps> = ({
           </div>
           
           {/* Task Title */}
-          <div className="flex-1 min-w-0 flex flex-col justify-start">
+          <div className="flex-1 min-w-0">
             <div 
               className="font-medium leading-relaxed transition-colors duration-200 text-left w-full" 
               style={{ color: theme.text }}
