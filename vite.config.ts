@@ -31,7 +31,9 @@ export default defineConfig(({ mode }) => {
               'react-dom': 'ReactDOM'
             }
           }
-        }
+        },
+        cssCodeSplit: false,
+        minify: false
       },
       resolve: {
         alias: {
