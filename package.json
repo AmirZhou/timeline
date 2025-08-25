@@ -35,7 +35,7 @@
   "scripts": {
     "dev": "npm-run-all --parallel dev:frontend dev:backend",
     "dev:frontend": "vite --open",
-    "dev:backend": "convex dev",
+    "dev:backend": "convex dev --prod",
     "build": "vite build",
     "build:lib": "vite build --mode lib",
     "prepublishOnly": "npm run build:lib",
