@@ -14,11 +14,15 @@
       "Week": 1,
       "Due Date": "2025-09-08",
       "Assignee": "Developer 1",
-      "Category": ["Legal Compliance", "Business Development"],
+      "Category": [
+        "Legal Compliance",
+        "Business Development"
+      ],
       "Description": "LIGHT WEEK - Classes starting, add/drop period. Gather Alberta court forms, study PIPA requirements, create documentation structure. NO heavy coding.",
       "Success Criteria": "50+ court forms collected, PIPA requirements documented, project repo initialized, development environments installed (not configured)",
       "Dependencies": "None - initial project setup",
-      "Risks": "Add,drop chaos limiting availability (20-30% capacity expected), course load uncertainty"
+      "Risks": "Add,drop chaos limiting availability (20-30% capacity expected), course load uncertainty",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Professional Networking & Legal Tech Community Building",
@@ -29,11 +33,15 @@
       "Week": 2,
       "Due Date": "2025-09-15",
       "Assignee": "Both Developers",
-      "Category": ["Personal Skills", "Business Development"],
+      "Category": [
+        "Personal Skills",
+        "Business Development"
+      ],
       "Description": "Join Alberta legal tech communities, establish professional LinkedIn presence, identify potential partners and mentors in the legal technology space.",
       "Success Criteria": "3 legal tech group memberships, 10+ professional connections, LinkedIn presence established, 2 industry newsletters subscribed",
       "Dependencies": "Project overview materials prepared",
-      "Risks": "Time management conflicts, low response rates from professionals, networking events scheduling conflicts"
+      "Risks": "Time management conflicts, low response rates from professionals, networking events scheduling conflicts",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Legal Compliance Consultation & Requirements Analysis",
@@ -44,11 +52,14 @@
       "Week": 2,
       "Due Date": "2025-09-15",
       "Assignee": "External",
-      "Category": ["Legal Compliance"],
+      "Category": [
+        "Legal Compliance"
+      ],
       "Description": "Schedule flat-fee consultation with Alberta lawyer to establish compliance framework, understand PIPA requirements, and clarify unauthorized practice of law boundaries.",
       "Success Criteria": "Legal consultation completed, PIPA compliance checklist created, UPL boundaries documented, privacy policy template obtained",
       "Dependencies": "Basic project concept documentation ready",
-      "Risks": "Lawyer availability, higher consultation costs than expected, discovery of major compliance barriers"
+      "Risks": "Lawyer availability, higher consultation costs than expected, discovery of major compliance barriers",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Backend Architecture & Document Security Foundation",
@@ -59,11 +70,14 @@
       "Week": 3,
       "Due Date": "2025-09-21",
       "Assignee": "Developer 1",
-      "Category": ["Technical Development"],
+      "Category": [
+        "Technical Development"
+      ],
       "Description": "WEEKEND INTENSIVE after add/drop settles. Build secure document management backend with Convex, implement user authentication, and establish document storage with encryption.",
       "Success Criteria": "Convex backend deployed to cloud, AES-256 encryption active, user authentication working, secure file upload/download operational",
       "Dependencies": "None - project kickoff task",
-      "Risks": "Learning curve with Convex platform, encryption implementation complexity, authentication security vulnerabilities"
+      "Risks": "Learning curve with Convex platform, encryption implementation complexity, authentication security vulnerabilities",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Frontend Foundation & User Management Interface",
@@ -74,11 +88,14 @@
       "Week": 3,
       "Due Date": "2025-09-28",
       "Assignee": "Developer 2",
-      "Category": ["Technical Development"],
+      "Category": [
+        "Technical Development"
+      ],
       "Description": "WEEKEND INTENSIVE. Build React frontend with TypeScript, implement responsive design, create user registration/login flows, and document upload interface.",
       "Success Criteria": "React app responsive across devices, user registration/login functional, document upload interface operational, Tailwind CSS configured",
       "Dependencies": "Backend API endpoints defined",
-      "Risks": "Framework selection complexity, responsive design challenges, UI/UX design inexperience"
+      "Risks": "Framework selection complexity, responsive design challenges, UI/UX design inexperience",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "PIPA Compliance Implementation & Privacy Framework",
@@ -89,11 +106,15 @@
       "Week": 4,
       "Due Date": "2025-10-05",
       "Assignee": "Both Developers",
-      "Category": ["Legal Compliance", "Technical Development"],
+      "Category": [
+        "Legal Compliance",
+        "Technical Development"
+      ],
       "Description": "CRITICAL WEEKEND SPRINT. Implement comprehensive PIPA compliance including data encryption, consent management, audit logging, and privacy controls.",
       "Success Criteria": "PIPA compliance fully implemented, consent management system operational, audit logging active, data retention policies configured",
       "Dependencies": "Backend architecture completion, legal consultation results",
-      "Risks": "Regulatory misunderstanding, implementation complexity, data breach vulnerabilities during development"
+      "Risks": "Regulatory misunderstanding, implementation complexity, data breach vulnerabilities during development",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Advanced Document Management & Version Control",
@@ -104,11 +125,14 @@
       "Week": 8,
       "Due Date": "2025-10-31",
       "Assignee": "Developer 1",
-      "Category": ["Technical Development"],
+      "Category": [
+        "Technical Development"
+      ],
       "Description": "Build enterprise-grade document management with version control, metadata management, and granular sharing permissions for professional legal workflows.",
       "Success Criteria": "Document versioning system operational, metadata tagging functional, granular permissions working, document history tracking complete",
       "Dependencies": "Backend foundation complete, PIPA compliance implemented",
-      "Risks": "Version control complexity, performance impact of metadata, permission system bugs"
+      "Risks": "Version control complexity, performance impact of metadata, permission system bugs",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Alberta Legal Forms Collection & Cataloguing System",
@@ -119,11 +143,15 @@
       "Week": 6,
       "Due Date": "2025-10-31",
       "Assignee": "Both Developers",
-      "Category": ["Technical Development", "Legal Compliance"],
+      "Category": [
+        "Technical Development",
+        "Legal Compliance"
+      ],
       "Description": "Systematically collect public Alberta court forms and legal templates, organize by jurisdiction and practice area, implement intelligent search system.",
       "Success Criteria": "100+ Alberta court forms catalogued, search by practice area functional, forms organized by jurisdiction, PDF handling operational",
       "Dependencies": "Document management foundation, legal compliance framework",
-      "Risks": "Form availability changes, PDF processing complexity, copyright concerns with form templates"
+      "Risks": "Form availability changes, PDF processing complexity, copyright concerns with form templates",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Alberta Lawyer Directory Integration",
@@ -134,11 +162,15 @@
       "Week": 11,
       "Due Date": "2025-11-12",
       "Assignee": "Developer 1",
-      "Category": ["Technical Development", "Business Development"],
+      "Category": [
+        "Technical Development",
+        "Business Development"
+      ],
       "Description": "Build searchable directory using publicly available Law Society of Alberta lawyer information, implement search by practice area, location, and credentials.",
       "Success Criteria": "Law Society data successfully integrated, search by practice area functional, contact information displayed, location-based search working",
       "Dependencies": "Core platform stability, legal compliance verification",
-      "Risks": "Data scraping limitations, Law Society website changes, data accuracy maintenance"
+      "Risks": "Data scraping limitations, Law Society website changes, data accuracy maintenance",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Professional UI/UX Design & Responsiveness",
@@ -149,11 +181,14 @@
       "Week": 11,
       "Due Date": "2025-11-12",
       "Assignee": "Developer 2",
-      "Category": ["Technical Development"],
+      "Category": [
+        "Technical Development"
+      ],
       "Description": "PARALLEL WORK during mid-term break. Polish interface to meet legal industry professional standards with excellent responsive design and accessibility.",
       "Success Criteria": "Professional legal industry design implemented, mobile responsive across devices, WCAG accessibility compliant, load times under 2 seconds",
       "Dependencies": "Core frontend functionality complete",
-      "Risks": "Design inexperience, accessibility compliance complexity, performance optimization challenges"
+      "Risks": "Design inexperience, accessibility compliance complexity, performance optimization challenges",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Document Collaboration Features (Non-Advisory)",
@@ -164,11 +199,14 @@
       "Week": 11,
       "Due Date": "2025-11-14",
       "Assignee": "Both Developers",
-      "Category": ["Technical Development"],
+      "Category": [
+        "Technical Development"
+      ],
       "Description": "Build document collaboration tools including commenting, annotation, and activity tracking while ensuring no legal advice features are included.",
       "Success Criteria": "Document commenting system operational, annotation tools functional, activity notifications working, collaboration history tracked",
       "Dependencies": "Advanced document management complete",
-      "Risks": "Feature scope creep into legal advice territory, real-time collaboration complexity"
+      "Risks": "Feature scope creep into legal advice territory, real-time collaboration complexity",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Demo Preparation & Pitch Deck Creation",
@@ -179,11 +217,16 @@
       "Week": 11,
       "Due Date": "2025-11-14",
       "Assignee": "Both Developers",
-      "Category": ["Business Development", "Personal Skills", "Demo/Testing"],
+      "Category": [
+        "Business Development",
+        "Personal Skills",
+        "Demo/Testing"
+      ],
       "Description": "Create comprehensive demonstration materials including interactive demo, pitch deck, and recorded video for legal tech professional presentations.",
       "Success Criteria": "15-slide pitch deck complete, 3-minute demo video recorded, interactive demo functional, elevator pitch memorized",
       "Dependencies": "Core features functional, professional network established",
-      "Risks": "Demo technical failures, presentation skills gaps, negative professional feedback"
+      "Risks": "Demo technical failures, presentation skills gaps, negative professional feedback",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Legal Resource Information Directory",
@@ -194,11 +237,15 @@
       "Week": 11,
       "Due Date": "2025-11-13",
       "Assignee": "Developer 2",
-      "Category": ["Technical Development", "Business Development"],
+      "Category": [
+        "Technical Development",
+        "Business Development"
+      ],
       "Description": "PARALLEL DEVELOPMENT. Curate comprehensive directory of Alberta legal information resources, court information, and process guides (public information only).",
       "Success Criteria": "500+ legal resources indexed, semantic search operational, resource categorization complete, regular update system implemented",
       "Dependencies": "Core platform functionality stable",
-      "Risks": "Resource data quality issues, information accuracy maintenance, content licensing concerns"
+      "Risks": "Resource data quality issues, information accuracy maintenance, content licensing concerns",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "User Testing with Legal Professionals",
@@ -209,11 +256,15 @@
       "Week": 11,
       "Due Date": "2025-11-16",
       "Assignee": "Both Developers",
-      "Category": ["Demo/Testing", "Business Development"],
+      "Category": [
+        "Demo/Testing",
+        "Business Development"
+      ],
       "Description": "Intensive user testing weekend with Alberta legal professionals, gather feedback on workflows and implement critical improvements immediately.",
       "Success Criteria": "15+ legal professionals complete testing, feedback documented and analyzed, 85%+ satisfaction achieved, critical issues resolved",
       "Dependencies": "Mid-term break development complete, demo-ready features available",
-      "Risks": "Professional availability on weekends, discovering major usability issues late in development"
+      "Risks": "Professional availability on weekends, discovering major usability issues late in development",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Analytics Dashboard & Usage Metrics",
@@ -224,11 +275,14 @@
       "Week": 12,
       "Due Date": "2025-11-23",
       "Assignee": "Developer 1",
-      "Category": ["Technical Development"],
+      "Category": [
+        "Technical Development"
+      ],
       "Description": "Build PIPA-compliant analytics system to track document usage, user engagement, and platform performance with professional reporting capabilities.",
       "Success Criteria": "Analytics dashboard operational with 10+ key metrics, PIPA-compliant data handling, performance monitoring active, usage reports generated",
       "Dependencies": "User base established, core platform features mature",
-      "Risks": "Privacy compliance complexity with analytics, performance impact of tracking, data visualization challenges"
+      "Risks": "Privacy compliance complexity with analytics, performance impact of tracking, data visualization challenges",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Mobile Optimization & PWA Implementation",
@@ -239,11 +293,14 @@
       "Week": 12,
       "Due Date": "2025-11-23",
       "Assignee": "Developer 2",
-      "Category": ["Technical Development"],
+      "Category": [
+        "Technical Development"
+      ],
       "Description": "Optimize platform for mobile legal professionals with Progressive Web App capabilities and offline document viewing functionality.",
       "Success Criteria": "Progressive Web App functional, offline document viewing operational, mobile-optimized interface complete, app store submission ready",
       "Dependencies": "Core web platform stable, UI/UX optimization complete",
-      "Risks": "PWA complexity, offline sync challenges, mobile performance optimization"
+      "Risks": "PWA complexity, offline sync challenges, mobile performance optimization",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Security Audit & Penetration Testing",
@@ -254,11 +311,15 @@
       "Week": 13,
       "Due Date": "2025-11-25",
       "Assignee": "Both Developers",
-      "Category": ["Technical Development", "Legal Compliance"],
+      "Category": [
+        "Technical Development",
+        "Legal Compliance"
+      ],
       "Description": "Comprehensive security review including penetration testing to ensure platform meets legal industry security standards and compliance requirements.",
       "Success Criteria": "Security vulnerabilities identified and resolved, penetration testing passed, compliance audit successful, security documentation complete",
       "Dependencies": "All core features implemented and stable",
-      "Risks": "Discovery of critical security flaws, time constraints for vulnerability fixes, compliance gaps"
+      "Risks": "Discovery of critical security flaws, time constraints for vulnerability fixes, compliance gaps",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Performance Optimization & Load Testing",
@@ -269,11 +330,14 @@
       "Week": 13,
       "Due Date": "2025-11-25",
       "Assignee": "Developer 1",
-      "Category": ["Technical Development"],
+      "Category": [
+        "Technical Development"
+      ],
       "Description": "Optimize platform performance for professional legal environment usage with comprehensive load testing and database optimization.",
       "Success Criteria": "Platform handles 100+ concurrent users, page load times under 2 seconds, database queries optimized, caching implemented",
       "Dependencies": "All features complete, analytics system operational",
-      "Risks": "Performance bottlenecks in document handling, database scaling challenges, optimization complexity"
+      "Risks": "Performance bottlenecks in document handling, database scaling challenges, optimization complexity",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "API Documentation & Developer Resources",
@@ -284,11 +348,15 @@
       "Week": 13,
       "Due Date": "2025-11-30",
       "Assignee": "Developer 1",
-      "Category": ["Technical Development", "Acquisition Prep"],
+      "Category": [
+        "Technical Development",
+        "Acquisition Prep"
+      ],
       "Description": "Create comprehensive technical documentation including API docs, integration guides, and deployment instructions for professional evaluation.",
       "Success Criteria": "Complete API documentation published, integration examples working, deployment guide tested, developer onboarding materials ready",
       "Dependencies": "All core features stabilized, platform architecture finalized",
-      "Risks": "Documentation completeness gaps, technical writing quality, example code maintenance"
+      "Risks": "Documentation completeness gaps, technical writing quality, example code maintenance",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Legal Compliance Final Review & Documentation",
@@ -299,11 +367,15 @@
       "Week": 14,
       "Due Date": "2025-12-05",
       "Assignee": "External",
-      "Category": ["Legal Compliance", "Acquisition Prep"],
+      "Category": [
+        "Legal Compliance",
+        "Acquisition Prep"
+      ],
       "Description": "Final comprehensive legal review to ensure all compliance requirements are met and documented before market launch and potential acquisition.",
       "Success Criteria": "Legal compliance fully verified, privacy audit documentation complete, regulatory compliance certificate obtained, legal risk assessment documented",
       "Dependencies": "All platform features complete and security tested",
-      "Risks": "Discovery of compliance gaps requiring major changes, legal review delays, certification process complications"
+      "Risks": "Discovery of compliance gaps requiring major changes, legal review delays, certification process complications",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Production Deployment & Monitoring Setup",
@@ -314,11 +386,15 @@
       "Week": 14,
       "Due Date": "2025-12-05",
       "Assignee": "Developer 1",
-      "Category": ["Technical Development", "Acquisition Prep"],
+      "Category": [
+        "Technical Development",
+        "Acquisition Prep"
+      ],
       "Description": "Deploy production-grade platform with enterprise monitoring, backup systems, and disaster recovery capabilities for professional use.",
       "Success Criteria": "Production environment stable with 99.9% uptime, comprehensive monitoring active, automated backups working, disaster recovery tested",
       "Dependencies": "Security audit passed, performance optimization complete",
-      "Risks": "Deployment complexity, monitoring system configuration, backup system failures"
+      "Risks": "Deployment complexity, monitoring system configuration, backup system failures",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Marketing Materials & Portfolio Documentation",
@@ -329,11 +405,16 @@
       "Week": 14,
       "Due Date": "2025-12-08",
       "Assignee": "Developer 2",
-      "Category": ["Business Development", "Personal Skills", "Acquisition Prep"],
+      "Category": [
+        "Business Development",
+        "Personal Skills",
+        "Acquisition Prep"
+      ],
       "Description": "Create professional marketing website, case studies, and comprehensive portfolio documentation showcasing technical achievements and capabilities.",
       "Success Criteria": "Professional marketing website live, 3+ detailed case studies complete, portfolio documentation comprehensive, technical achievements highlighted",
       "Dependencies": "Platform fully functional, user testing feedback integrated",
-      "Risks": "Marketing content quality, portfolio presentation effectiveness, time constraints during exam preparation"
+      "Risks": "Marketing content quality, portfolio presentation effectiveness, time constraints during exam preparation",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Legal Tech Community Presentations & Pilots",
@@ -344,11 +425,16 @@
       "Week": 14,
       "Due Date": "2025-12-10",
       "Assignee": "Both Developers",
-      "Category": ["Business Development", "Demo/Testing", "Personal Skills"],
+      "Category": [
+        "Business Development",
+        "Demo/Testing",
+        "Personal Skills"
+      ],
       "Description": "Present platform to Alberta legal community, establish pilot programs with interested law firms, and build professional network for future opportunities.",
       "Success Criteria": "3+ law firm presentations completed, 2+ pilot programs initiated, 5+ professional references obtained, legal community presence established",
       "Dependencies": "Platform production-ready, marketing materials complete",
-      "Risks": "Professional presentation skills, law firm scheduling during busy period, pilot program complexity"
+      "Risks": "Professional presentation skills, law firm scheduling during busy period, pilot program complexity",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     },
     {
       "Task Name": "Acquisition Outreach & Transition Planning",
@@ -359,11 +445,16 @@
       "Week": 14,
       "Due Date": "2025-12-10",
       "Assignee": "Both Developers",
-      "Category": ["Business Development", "Acquisition Prep", "Personal Skills"],
+      "Category": [
+        "Business Development",
+        "Acquisition Prep",
+        "Personal Skills"
+      ],
       "Description": "MINIMAL TIME - Finals priority! Contact potential buyers, conduct acquisition discussions, and prepare transition documentation. Maximum 30 minutes per day.",
       "Success Criteria": "10+ potential buyers contacted, 3+ serious acquisition discussions initiated, transition plan documented, post-graduation strategy defined",
       "Dependencies": "All platform features complete, legal compliance verified, portfolio ready",
-      "Risks": "CRITICAL: Must not impact final exam preparation. Buyer interest timing, acquisition complexity, transition planning gaps"
+      "Risks": "CRITICAL: Must not impact final exam preparation. Buyer interest timing, acquisition complexity, transition planning gaps",
+      "Resources": "TBD - Manual curation of relevant legal resources and documentation links"
     }
   ]
 }
