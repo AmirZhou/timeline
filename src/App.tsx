@@ -1,10 +1,5 @@
-import { ProjectTimeline } from "./components/ProjectTimeline";
-import { DEFAULT_TIMELINE_CONFIG } from "./types/config";
+import { Demo } from "./Demo";
 
 export default function App() {
-  return (
-    <div className="min-h-screen bg-black">
-      <ProjectTimeline config={DEFAULT_TIMELINE_CONFIG} />
-    </div>
-  );
+  return <Demo />;
 }
