@@ -3,16 +3,22 @@
   "private": false,
   "version": "1.0.0",
   "description": "A reusable React timeline component with Notion integration",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.es.js",
   "files": [
     "dist"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/AmirZhou/timeline.git"
+    "url": "git+https://github.com/AmirZhou/timeline.git"
   },
-  "keywords": ["react", "timeline", "notion", "component", "typescript"],
+  "keywords": [
+    "react",
+    "timeline",
+    "notion",
+    "component",
+    "typescript"
+  ],
   "author": "bitravage",
   "license": "MIT",
   "type": "module",

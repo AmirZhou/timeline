@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
           entry: path.resolve(__dirname, 'src/index.ts'),
           name: 'Timeline',
           formats: ['es', 'umd'],
-          fileName: (format) => `timeline.${format}.js`
+          fileName: (format) => `index.${format}.js`
         },
         rollupOptions: {
           external: ['react', 'react-dom'],

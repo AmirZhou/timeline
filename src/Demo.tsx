@@ -10,7 +10,7 @@ export const Demo: React.FC = () => {
     return (
       <div>
         <Timeline theme={theme} />
-        <button 
+        <button
           onClick={() => setShowDemo(true)}
           style={{
             position: 'fixed',
@@ -31,28 +31,28 @@ export const Demo: React.FC = () => {
   }
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
+    <div style={{
+      minHeight: '100vh',
       background: theme === 'dark' ? '#000' : '#f5f5f5',
       color: theme === 'dark' ? '#fff' : '#000',
       padding: '20px'
     }}>
-      <div style={{ 
-        maxWidth: '1200px', 
+      <div style={{
+        maxWidth: '1200px',
         margin: '0 auto',
         marginBottom: '20px'
       }}>
-        <h1 style={{ 
-          textAlign: 'center', 
+        <h1 style={{
+          textAlign: 'center',
           marginBottom: '10px',
           color: '#00ff00'
         }}>
           @bitravage/timeline Demo
         </h1>
-        
-        <div style={{ 
-          display: 'flex', 
-          gap: '20px', 
+
+        <div style={{
+          display: 'flex',
+          gap: '20px',
           justifyContent: 'center',
           marginBottom: '20px',
           flexWrap: 'wrap'
@@ -66,7 +66,7 @@ export const Demo: React.FC = () => {
             />
             Dark Theme
           </label>
-          
+
           <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <input
               type="radio"
@@ -100,7 +100,7 @@ export const Demo: React.FC = () => {
           marginBottom: '20px'
         }}>
           <h2 style={{ marginBottom: '16px', color: '#00ff00' }}>Usage Example:</h2>
-          <pre style={{ 
+          <pre style={{
             background: theme === 'dark' ? '#111' : '#f8f8f8',
             padding: '12px',
             borderRadius: '4px',
@@ -108,7 +108,7 @@ export const Demo: React.FC = () => {
             fontSize: '14px',
             border: `1px solid ${theme === 'dark' ? '#333' : '#ddd'}`
           }}>
-{`import { Timeline } from '@bitravage/timeline';
+            {`import { Timeline } from '@bitravage/timeline';
 
 // Basic usage (reads from environment variables)
 <Timeline />
@@ -124,8 +124,8 @@ export const Demo: React.FC = () => {
       </div>
 
       {/* The actual Timeline component */}
-      <Timeline 
-        theme={theme} 
+      <Timeline
+        theme={theme}
         className="demo-timeline"
       />
     </div>
