@@ -9,7 +9,7 @@ export const Demo: React.FC = () => {
     // Show just the timeline component without demo UI
     return (
       <div>
-        <Timeline theme={theme} />
+        <Timeline theme={theme} convexUrl={import.meta.env.VITE_CONVEX_URL as string} />
         <button
           onClick={() => setShowDemo(true)}
           style={{
@@ -130,6 +130,7 @@ export const Demo: React.FC = () => {
       <Timeline
         theme={theme}
         className="demo-timeline"
+        convexUrl={import.meta.env.VITE_CONVEX_URL as string}
       />
     </div>
   );

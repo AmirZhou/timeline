@@ -48,8 +48,14 @@ export const TimelineNode: React.FC<TimelineNodeProps> = ({
 
   return (
     <div className="relative flex items-start group">
-      {/* Timeline Dot */}
-      <div className="absolute left-6 -ml-2 w-4 h-4 rounded-full border-4 z-10" style={{ backgroundColor: theme.text, borderColor: theme.background }}></div>
+      {/* Timeline Dot - Centered on line (25px) and aligned with first line of text */}
+      <div className="absolute w-4 h-4 rounded-full border-4 z-10" style={{ 
+        backgroundColor: theme.text, 
+        borderColor: theme.background, 
+        left: '25px',
+        transform: 'translateX(-50%)',
+        top: isPhaseStart ? '0.25rem' : '1rem'
+      }}></div>
       
       <div className="ml-16 cursor-pointer" onClick={handleClick}>
         {/* Phase Title (only for first task of phase) */}
