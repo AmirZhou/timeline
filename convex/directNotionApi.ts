@@ -142,10 +142,10 @@ function extractDueDate(properties: any, mapping: PropertyMapping): string | und
 }
 
 function extractReference(properties: any, mapping: PropertyMapping): string | undefined {
-  return extractRichTextProperty(properties, mapping, 'Resources') ||
-         extractRichTextProperty(properties, mapping, 'Reference') ||
-         properties['Resources']?.rich_text?.map((rt: any) => rt.plain_text).join('') ||
-         properties['Reference']?.rich_text?.map((rt: any) => rt.plain_text).join('') || undefined;
+  return extractRichTextProperty(properties, mapping, 'Reference') ||
+         extractRichTextProperty(properties, mapping, 'Resources') ||
+         properties['Reference']?.rich_text?.map((rt: any) => rt.plain_text).join('') ||
+         properties['Resources']?.rich_text?.map((rt: any) => rt.plain_text).join('') || undefined;
 }
 
 export const getProjectTimelineDirect = action({
