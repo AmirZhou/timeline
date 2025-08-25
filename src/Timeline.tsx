@@ -13,12 +13,15 @@ const getConvexUrl = (providedUrl?: string): string => {
     return providedUrl;
   }
 
+  // Safe environment variable access for browser compatibility
+  const env = typeof process !== 'undefined' && process.env ? process.env : {};
+  
   // Try multiple environment variable patterns
   const envUrl = 
-    process.env.VITE_CONVEX_URL ||           // Vite
-    process.env.NEXT_PUBLIC_CONVEX_URL ||    // Next.js  
-    process.env.REACT_APP_CONVEX_URL ||      // Create React App
-    process.env.CONVEX_URL;                  // Node/others
+    (import.meta as any).env?.VITE_CONVEX_URL ||        // Vite
+    env.NEXT_PUBLIC_CONVEX_URL ||                       // Next.js  
+    env.REACT_APP_CONVEX_URL ||                         // Create React App
+    env.CONVEX_URL;                                     // Node/others
 
   if (!envUrl) {
     throw new Error(
