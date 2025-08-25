@@ -1,13 +1,28 @@
 {
-  "name": "flex-template",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@bitravage/timeline",
+  "private": false,
+  "version": "1.0.0",
+  "description": "A reusable React timeline component with Notion integration",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AmirZhou/timeline.git"
+  },
+  "keywords": ["react", "timeline", "notion", "component", "typescript"],
+  "author": "bitravage",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "npm-run-all --parallel dev:frontend dev:backend",
     "dev:frontend": "vite --open",
     "dev:backend": "convex dev",
     "build": "vite build",
+    "build:lib": "vite build --mode lib",
+    "prepublishOnly": "npm run build:lib",
     "lint": "tsc -p convex -noEmit --pretty false && tsc -p . -noEmit --pretty false && convex dev --prod --once && vite build"
   },
   "dependencies": {
