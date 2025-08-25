@@ -71,7 +71,7 @@ export const TimelineNode: React.FC<TimelineNodeProps> = ({
           {/* Task Title */}
           <div className="flex-1 min-w-0">
             <div 
-              className="font-medium leading-relaxed transition-colors duration-200" 
+              className="font-medium leading-relaxed transition-colors duration-200 text-left" 
               style={{ color: theme.text }}
               onMouseEnter={(e) => {
                 (e.target as HTMLElement).style.color = theme.accent;
