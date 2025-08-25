@@ -70,7 +70,7 @@ export const TimelineNode: React.FC<TimelineNodeProps> = ({
           
           {/* Task Title */}
           <div className="flex-1 min-w-0">
-            <div className="text-white font-medium leading-relaxed group-hover:text-green-400 transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
+            <div className="text-white font-medium leading-relaxed group-hover:text-[#00ff00] transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-[#00ff00] focus:ring-opacity-50">
               {task.title}
             </div>
             {task.properties.assignee && (

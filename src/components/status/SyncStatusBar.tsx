@@ -38,7 +38,7 @@ export const SyncStatusBar: React.FC = () => {
     }
   };
 
-  const statusColor = syncError ? 'bg-red-500' : (isRecent ? 'bg-green-400' : 'bg-gray-400');
+  const statusColor = syncError ? 'bg-red-500' : (isRecent ? 'bg-[#00ff00]' : 'bg-gray-400');
   const hasError = syncStatus.status === 'error' || syncError;
 
   return (
@@ -61,7 +61,7 @@ export const SyncStatusBar: React.FC = () => {
           className={`text-sm font-medium px-3 py-1 transition-all duration-200 motion-reduce:transition-none flex items-center gap-1 ${
             isSyncing 
               ? 'text-gray-500 cursor-not-allowed' 
-              : 'text-green-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50'
+              : 'text-[#00ff00] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#00ff00] focus:ring-opacity-50'
           }`}
         >
           <svg 
