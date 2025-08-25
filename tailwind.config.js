@@ -27,8 +27,8 @@ module.exports = {
           hover: "#4B5563",
         },
         accent: {
-          DEFAULT: "#8B5CF6",
-          hover: "#7C3AED",
+          DEFAULT: "var(--color-accent)",
+          hover: "var(--color-accent)",
         },
       },
       spacing: {

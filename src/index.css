@@ -5,6 +5,7 @@
 :root {
   --color-light: #ffffff;
   --color-dark: #171717;
+  --color-accent: #00ff00;
 }
 
 .accent-text {
