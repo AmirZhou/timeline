@@ -14,14 +14,17 @@ export const Demo: React.FC = () => {
           onClick={() => setShowDemo(true)}
           style={{
             position: 'fixed',
-            top: 10,
-            right: 10,
+            top: 80,
+            right: 20,
             padding: '8px 16px',
             background: 'rgba(0,255,0,0.2)',
             border: '1px solid #00ff00',
             color: '#00ff00',
             borderRadius: '4px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            zIndex: 1000,
+            fontSize: '14px',
+            fontWeight: '500'
           }}
         >
           Show Demo UI

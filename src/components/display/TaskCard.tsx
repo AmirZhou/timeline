@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '../providers/ThemeProvider';
 
 interface TaskCardProps {
   task: {
@@ -46,6 +47,7 @@ const getPriorityColor = (priority: string) => {
 };
 
 export const TaskCard: React.FC<TaskCardProps> = ({ task, taskNumber, onClick }) => {
+  const theme = useTheme();
   const handleClick = () => {
     onClick?.(task);
   };
@@ -57,15 +59,19 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, taskNumber, onClick })
 
   return (
     <div 
-      className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer min-h-[48px] flex items-center justify-between active:scale-95"
+      className="rounded-lg shadow-sm border p-3 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer min-h-[48px] flex items-center justify-between active:scale-95"
+      style={{ 
+        backgroundColor: theme.background, 
+        borderColor: theme.border 
+      }}
       onClick={handleClick}
     >
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${getStatusColor(task.properties.status)}`}></div>
         
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="text-sm font-medium text-gray-500 flex-shrink-0">{taskNumber}</span>
-          <span className="text-sm font-medium text-gray-900 truncate">
+          <span className="text-sm font-medium flex-shrink-0" style={{ color: theme.textSecondary }}>{taskNumber}</span>
+          <span className="text-sm font-medium truncate" style={{ color: theme.text }}>
             {getShortTitle(task.title)}
           </span>
         </div>

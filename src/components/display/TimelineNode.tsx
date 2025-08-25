@@ -48,20 +48,20 @@ export const TimelineNode: React.FC<TimelineNodeProps> = ({
   return (
     <div className="relative flex items-start group">
       {/* Timeline Dot */}
-      <div className="absolute left-6 -ml-2 w-4 h-4 bg-white rounded-full border-4 border-gray-800 z-10"></div>
+      <div className="absolute left-6 -ml-2 w-4 h-4 rounded-full border-4 z-10" style={{ backgroundColor: theme.text, borderColor: theme.background }}></div>
       
       <div className="ml-16 cursor-pointer" onClick={handleClick}>
         {/* Phase Title (only for first task of phase) */}
         {isPhaseStart && (
-          <div className="text-white font-mono text-lg font-bold mb-2 tracking-wide">
+          <div className="font-mono text-lg font-bold mb-2 tracking-wide" style={{ color: theme.text }}>
             {phaseTitle}
           </div>
         )}
         
         {/* Task Content */}
-        <div className="flex items-start space-x-4 p-3 rounded-lg transition-all duration-200">
+        <div className="flex items-start p-3 rounded-lg transition-all duration-200">
           {/* Task Number and Status */}
-          <div className="flex items-center space-x-3 min-w-0">
+          <div className="flex items-center space-x-3 mr-4">
             <span className="text-gray-400 font-mono text-sm min-w-[3rem]">
               {taskNumber}
             </span>
@@ -70,7 +70,16 @@ export const TimelineNode: React.FC<TimelineNodeProps> = ({
           
           {/* Task Title */}
           <div className="flex-1 min-w-0">
-            <div className="text-white font-medium leading-relaxed group-hover:text-accent transition-colors duration-200 motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-accent focus:ring-opacity-50">
+            <div 
+              className="font-medium leading-relaxed transition-colors duration-200 text-left w-full" 
+              style={{ color: theme.text }}
+              onMouseEnter={(e) => {
+                (e.target as HTMLElement).style.color = theme.accent;
+              }}
+              onMouseLeave={(e) => {
+                (e.target as HTMLElement).style.color = theme.text;
+              }}
+            >
               {task.title}
             </div>
             {task.properties.assignee && (

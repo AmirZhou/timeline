@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '../providers/ThemeProvider';
 import { TaskStatus } from '../status/TaskStatus';
 import { ErrorFallback } from '../status/ErrorFallback';
 import { TaskModalProps } from '../../types/task';
@@ -8,6 +9,8 @@ import { getPriorityColor } from '../../utils/priorityUtils';
 
 
 export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, taskNumber }) => {
+  const theme = useTheme();
+  
   if (!isOpen) return null;
 
   if (!task) {
@@ -37,14 +40,17 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      style={{ 
+        backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.3)'
+      }}
       onClick={handleBackdropClick}
       onKeyDown={handleEscapeKey}
       tabIndex={-1}
     >
-      <div className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fadeIn">
+      <div className="backdrop-blur-2xl border rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fadeIn" style={{ backgroundColor: theme.glass.background, borderColor: theme.glass.border }}>
         {/* Header */}
-        <div className="sticky top-0 bg-black/30 backdrop-blur-lg border-b border-white/10 p-6 rounded-t-xl">
+        <div className="sticky top-0 border-b p-6 rounded-t-2xl" style={{ borderColor: theme.glass.border }}>
           <div className="flex justify-between items-start">
             <div className="flex items-start gap-4 flex-1">
               <div className="flex items-center gap-3">
@@ -62,7 +68,19 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
             
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-gray-800"
+              className="transition-colors p-1 rounded-full" 
+              style={{ 
+                color: theme.textSecondary,
+                backgroundColor: 'transparent'
+              }}
+              onMouseEnter={(e) => {
+                (e.target as HTMLElement).style.color = theme.text;
+                (e.target as HTMLElement).style.backgroundColor = theme.mode === 'dark' ? '#374151' : '#f3f4f6';
+              }}
+              onMouseLeave={(e) => {
+                (e.target as HTMLElement).style.color = theme.textSecondary;
+                (e.target as HTMLElement).style.backgroundColor = 'transparent';
+              }}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -70,25 +88,25 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
             </button>
           </div>
           
-          <h2 className="text-2xl font-bold font-mono text-white mt-4 leading-tight">
+          <h2 className="text-2xl font-bold font-mono mt-4 leading-tight" style={{ color: theme.text }}>
             {task.title}
           </h2>
           
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6" style={{ backgroundColor: 'transparent' }}>
 
           {/* Description Section */}
           {task.properties.description && (
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="font-semibold font-mono text-white text-lg">Task Description</h3>
-                <div className={`w-8 h-8 rounded-full border border-white/20 flex items-center justify-center ${assigneeDetails.color} font-mono text-xs font-bold`}>
+                <h3 className="font-semibold font-mono text-lg" style={{ color: theme.text }}>Task Description</h3>
+                <div className={`w-8 h-8 rounded-full border flex items-center justify-center ${assigneeDetails.color} font-mono text-xs font-bold`} style={{ borderColor: theme.border }}>
                   {assigneeDetails.initials}
                 </div>
               </div>
-              <p className="text-gray-300 font-mono text-sm leading-relaxed whitespace-pre-wrap">
+              <p className="font-mono text-sm leading-relaxed whitespace-pre-wrap" style={{ color: theme.textSecondary }}>
                 {task.properties.description}
               </p>
             </div>
@@ -104,7 +122,14 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
             href={task.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-gray-400 hover:text-white font-mono underline"
+            className="text-sm font-mono underline transition-colors duration-200"
+            style={{ color: theme.textSecondary }}
+            onMouseEnter={(e) => {
+              (e.target as HTMLElement).style.color = theme.accent;
+            }}
+            onMouseLeave={(e) => {
+              (e.target as HTMLElement).style.color = theme.textSecondary;
+            }}
           >
             View in Notion
           </a>

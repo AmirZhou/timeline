@@ -33,17 +33,17 @@ const darkTheme: ThemeColors = {
 };
 
 const lightTheme: ThemeColors = {
-  background: '#ffffff',
-  text: '#171717',
-  textSecondary: '#6b7280',
-  accent: '#00ff00',
-  success: '#00ff00',
-  warning: '#f59e0b',
-  error: '#ef4444',
-  border: '#e5e7eb',
+  background: '#f8fafc',
+  text: '#1e293b',
+  textSecondary: '#64748b',
+  accent: '#1d4ed8',
+  success: '#059669',
+  warning: '#d97706',
+  error: '#dc2626',
+  border: '#cbd5e1',
   glass: {
-    background: 'rgba(255, 255, 255, 0.3)',
-    border: 'rgba(0, 0, 0, 0.1)',
+    background: 'rgba(248, 250, 252, 0.80)',
+    border: 'rgba(71, 85, 105, 0.30)',
   },
 };
 
