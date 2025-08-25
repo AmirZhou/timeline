@@ -1,7 +1,7 @@
 {
   "name": "@bitravage/timeline",
   "private": false,
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "A reusable React timeline component with Notion integration",
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",
