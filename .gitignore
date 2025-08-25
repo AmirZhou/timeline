@@ -16,12 +16,16 @@ dist-ssr
 .vscode/*
 !.vscode/extensions.json
 .idea
+.cursor
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Development tools
+.playwright-mcp
 
 # Ignored for the template, you probably want to remove it:
 package-lock.json
