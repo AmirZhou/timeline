@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { useTimelineState } from '../providers/TimelineStateProvider';
+import { ErrorFallback } from './ErrorFallback';
 
 export const SyncStatusBar: React.FC = () => {
-  const { syncStatus, triggerSync, lastFetch } = useTimelineState();
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [syncDelay, setSyncDelay] = useState<number | null>(null);
+  try {
+    const { syncStatus, triggerSync, lastFetch } = useTimelineState();
+    const [isSyncing, setIsSyncing] = useState(false);
+    const [syncDelay, setSyncDelay] = useState<number | null>(null);
+    const [syncError, setSyncError] = useState<string | null>(null);
 
   if (!syncStatus) return null;
 
@@ -22,32 +25,43 @@ export const SyncStatusBar: React.FC = () => {
     const startTime = Date.now();
     
     try {
+      setSyncError(null);
       await triggerSync();
       const duration = Date.now() - startTime;
       setSyncDelay(Math.round(duration / 1000));
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Sync failed';
       console.error('Sync failed:', error);
+      setSyncError(errorMessage);
     } finally {
       setIsSyncing(false);
     }
   };
 
+  const statusColor = syncError ? 'bg-red-500' : (isRecent ? 'bg-[#00ff00]' : 'bg-gray-400');
+  const hasError = syncStatus.status === 'error' || syncError;
+
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+    <div className={`bg-black/5 backdrop-blur-sm border border-white/5 rounded-xl p-4 mb-6 ${hasError ? 'border-red-500/30' : ''}`}>
+      {hasError && (
+        <div className="mb-2 text-sm text-red-400">
+          ⚠️ {syncError || syncStatus.error || 'Sync error occurred'}
+        </div>
+      )}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <div className={`w-2 h-2 rounded-full ${isRecent ? 'bg-green-500' : 'bg-gray-400'} ${isSyncing ? 'animate-pulse' : ''}`}></div>
-          <span className="text-sm text-gray-600">
-            Last synced: <span className="font-medium text-gray-900">{lastSyncTime}</span>
+          <div className={`w-2 h-2 rounded-full ${statusColor} ${isSyncing ? 'animate-pulse' : ''}`}></div>
+          <span className={`text-sm ${hasError ? 'text-red-400' : 'text-gray-400'}`}>
+            Last synced: <span className={`font-medium ${hasError ? 'text-red-300' : 'text-white'}`}>{lastSyncTime}</span>
           </span>
         </div>
         <button 
           onClick={handleSync}
           disabled={isSyncing}
-          className={`text-sm font-medium px-3 py-1 rounded-md transition-colors duration-200 flex items-center gap-1 ${
+          className={`text-sm font-medium px-3 py-1 transition-all duration-200 flex items-center gap-1 ${
             isSyncing 
-              ? 'text-gray-400 bg-gray-100 cursor-not-allowed' 
-              : 'text-blue-600 hover:text-blue-800 hover:bg-blue-50'
+              ? 'text-gray-500 cursor-not-allowed' 
+              : 'text-[#00ff00] hover:text-white'
           }`}
         >
           <svg 
@@ -67,4 +81,12 @@ export const SyncStatusBar: React.FC = () => {
       
     </div>
   );
+  } catch (error) {
+    console.error('SyncStatusBar error:', error);
+    return (
+      <ErrorFallback 
+        message="Failed to load sync status" 
+      />
+    );
+  }
 };
