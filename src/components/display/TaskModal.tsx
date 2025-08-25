@@ -23,7 +23,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
   }
 
   try {
-    const statusDetails = getStatusDetails(task.properties.status);
+    const statusDetails = getStatusDetails(task.properties.status || '');
     const assigneeDetails = getAssigneeDetails(task.properties.assignee);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -55,7 +55,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
             <div className="flex items-start gap-4 flex-1">
               <div className="flex items-center gap-3">
                 {taskNumber && (
-                  <span className={`text-lg font-bold font-mono ${getStatusColor(task.properties.status)}`}>
+                  <span className={`text-lg font-bold font-mono ${getStatusColor(task.properties.status || '')}`}>
                     {taskNumber}: {task.properties.status}
                   </span>
                 )}
