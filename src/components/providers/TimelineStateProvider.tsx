@@ -86,11 +86,9 @@ export const TimelineStateProvider: React.FC<TimelineStateProviderProps> = ({ ch
   };
 
   const triggerSync = async () => {
-    console.log("🔄 Starting direct API fetch...");
     setIsLoading(true);
     try {
       const result = await getProjectTimelineDirectAction({});
-      console.log("✅ Direct API fetch completed:", result);
       setAllTasks(result);
       setLastFetch(new Date());
       setSyncStatus({ 

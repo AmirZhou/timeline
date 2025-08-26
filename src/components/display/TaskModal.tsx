@@ -41,7 +41,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({ task, isOpen, onClose, tas
 
   return (
     <div 
-      className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 backdrop-blur flex items-center justify-center z-50 p-4"
       style={{ 
         backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.3)'
       }}

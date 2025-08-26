@@ -87,9 +87,7 @@ interface TimelineProps {
  * ```
  */
 // Inject CSS immediately when module is imported (industry standard)
-console.log('📦 [Timeline Component] Module loaded - triggering CSS injection');
 injectTimelineCSS();
-console.log('📦 [Timeline Component] CSS injection completed');
 
 export const Timeline: React.FC<TimelineProps> = ({ 
   theme = 'dark',

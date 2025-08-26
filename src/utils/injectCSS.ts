@@ -11,25 +11,17 @@ let cssInjected = false;
  * This provides automatic styling without requiring manual CSS imports
  */
 export function injectTimelineCSS(): void {
-  console.log('🎨 [Timeline CSS Injection] Starting CSS injection process...');
-  
   // Skip injection if already injected or in SSR environment
   if (cssInjected || typeof document === 'undefined') {
-    console.log('🎨 [Timeline CSS Injection] Skipped - Already injected or SSR environment');
-    console.log('  - cssInjected flag:', cssInjected);
-    console.log('  - document available:', typeof document !== 'undefined');
     return;
   }
 
   // Check if CSS is already injected by another instance
   if (document.getElementById('bitravage-timeline-styles')) {
-    console.log('🎨 [Timeline CSS Injection] Found existing styles in DOM - marking as injected');
     cssInjected = true;
     return;
   }
 
-  console.log('🎨 [Timeline CSS Injection] Creating new <style> element...');
-  
   // Create style element
   const styleElement = document.createElement('style');
   styleElement.id = 'bitravage-timeline-styles';
@@ -39,19 +31,11 @@ export function injectTimelineCSS(): void {
   const cssContent = getCompiledCSS();
   styleElement.textContent = cssContent;
   
-  console.log('🎨 [Timeline CSS Injection] Injecting CSS into document head');
-  console.log('  - Style element ID:', styleElement.id);
-  console.log('  - CSS content length:', cssContent.length, 'characters');
-  console.log('  - CSS size:', Math.round(cssContent.length / 1024 * 100) / 100, 'KB');
-  
   // Inject into document head
   document.head.appendChild(styleElement);
   
   // Mark as injected
   cssInjected = true;
-  
-  console.log('✅ [Timeline CSS Injection] CSS successfully injected!');
-  console.log('  - Total <style> elements in head:', document.head.querySelectorAll('style').length);
 }
 
 /**
